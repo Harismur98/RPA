@@ -94,6 +94,23 @@
                 </div>
               </li>
               <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#vm">
+                  <i class="fas fa-pen-square"></i>
+                  <p>VM</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="vm">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{{ route('vms.index') }}">
+                        <span class="sub-item">VM List</span>
+                      </a>
+                    </li>
+                  
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#tables">
                   <i class="fas fa-table"></i>
                   <p>Tables</p>

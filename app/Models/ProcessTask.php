@@ -14,7 +14,7 @@ class ProcessTask extends Model
      *
      * @var string
      */
-    protected $table = 'process_tasks';
+    protected $table = 'processtasks';
 
     /**
      * The attributes that are mass assignable.

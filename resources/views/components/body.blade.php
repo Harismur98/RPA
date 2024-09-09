@@ -1,3 +1,6 @@
+@extends('layout.app')
+
+@section('content')
 <div class="main-panel">
     @include('components.navbarHeader')
 
@@ -623,3 +626,4 @@
       </div>
     </div>
     @include('components.footer')
+@endsection

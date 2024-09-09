@@ -5,18 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Process extends Model
+class Fileimg extends Model
 {
     use HasFactory;
-
-    protected $table = 'process';
-
+    protected $table = 'file_img';
     protected $fillable = [
-        'process_name',
-        'description',
-        'delete_by',
-        'create_by',
+        'process_task_id',
+        'filename',
+        'original_name',
+        'file_path',
+        'file_index',
     ];
-
-
 }

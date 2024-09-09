@@ -1,3 +1,6 @@
+@extends('layout.app')
+
+@section('content')
 <div class="main-panel">
     @include('components.navbarHeader')
     
@@ -95,6 +98,7 @@
                                 <h4 class="card-title">Add New VM</h4>
                             </div>
                             <div class="card-body">
+                                
                                 <form action="{{ route('vms.store') }}" method="POST">
                                     @csrf
                                     <div class="form-group">
@@ -103,12 +107,12 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="api_key">API Key</label>
-                                        <input type="text" class="form-control" name="api_key" required>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="api_key" name="api_key" readonly>
+                                            <button type="button" class="btn btn-primary" id="generateApiKeyButton">Generate API Key</button>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="last_handshake">Last Handshake</label>
-                                        <input type="datetime-local" class="form-control" name="last_handshake">
-                                    </div>
+                                    
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary">Save VM</button>
                                     </div>
@@ -123,13 +127,24 @@
     @include('components.footer')
 
     <script>
-  
-          document.getElementById('addVmButton').addEventListener('click', function() {
-                // Change the table's grid from col-md-12 to col-md-6
-                document.getElementById('vm-table-container').classList.remove('col-md-12');
-                document.getElementById('vm-table-container').classList.add('col-md-6');
+        document.getElementById('addVmButton').addEventListener('click', function() {
+            // Change the table's grid from col-md-12 to col-md-6
+            document.getElementById('vm-table-container').classList.remove('col-md-12');
+            document.getElementById('vm-table-container').classList.add('col-md-6');
 
-                // Show the form container
-                document.getElementById('vm-form-container').style.display = 'block';
-            });
+            // Show the form container
+            document.getElementById('vm-form-container').style.display = 'block';
+        });
+
+        document.getElementById('generateApiKeyButton').addEventListener('click', function() {
+            // Make an AJAX request to generate the API key
+            fetch('{{ route("generate.api.key") }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Update the input field with the generated API key
+                    document.getElementById('api_key').value = data.api_key;
+                })
+                .catch(error => console.error('Error:', error));
+        });
       </script>
+@endsection

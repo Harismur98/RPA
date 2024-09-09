@@ -14,7 +14,7 @@ class ProcessStep extends Model
      *
      * @var string
      */
-    protected $table = 'process_steps';
+    protected $table = 'processsteps';
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +24,9 @@ class ProcessStep extends Model
     protected $fillable = [
         'step_name',
         'process_id',
+        'delete_by',
+        'create_by',
+        'description',
     ];
 
     /**

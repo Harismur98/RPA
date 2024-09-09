@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('process', function (Blueprint $table) {
+        Schema::table('processsteps', function (Blueprint $table) {
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('delete_by')->nullable()->default(1)->change();
+            $table->unsignedBigInteger('delete_by')->nullable()->default(1);
             $table->foreign('delete_by')->references('id')->on('users');
             $table->unsignedBigInteger('create_by');
             $table->foreign('create_by')->references('id')->on('users');

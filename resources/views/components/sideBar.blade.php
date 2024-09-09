@@ -81,7 +81,7 @@
                 <div class="collapse" id="rpa">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="/rpa">
+                      <a href="{{ route('rpa.process.index') }}">
                         <span class="sub-item">Process</span>
                       </a>
                     </li>
@@ -94,7 +94,7 @@
                 </div>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#vm">
+                <a data-bs-toggle="collapse" href="#vm  ">
                   <i class="fas fa-pen-square"></i>
                   <p>VM</p>
                   <span class="caret"></span>

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('processTasks', function (Blueprint $table) {
             $table->id();
-            $table->string('Task_name');
+            $table->string('task_name');
             $table->integer('confidence');
             $table->integer('order');
             $table->boolean('is_loop');
-            $table->boolean('is_stopTask');
+            $table->boolean('is_stop_task');
             $table->string('value');
             $table->unsignedBigInteger('step_id');
             $table->foreign('step_id')->references('id')->on('processSteps');

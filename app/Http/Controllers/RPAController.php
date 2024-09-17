@@ -79,14 +79,14 @@ class RPAController extends Controller
 
     public function process_task_index(Request $request)
     {
-        $processStepId = $request->query('process_step_id');
+        $processStepId = $request->query('step_id');
 
         // Validate processStepId if necessary
         if (!$processStepId) {
             return response()->json(['error' => 'Process Step ID is required'], 400);
         }
 
-        $processTasks = ProcessTask::where('process_step_id', $processStepId)
+        $processTasks = ProcessTask::where('step_id', $processStepId)
                                 ->where('delete_by', '=', 1)
                                 ->get();
 
@@ -95,69 +95,82 @@ class RPAController extends Controller
 
     public function process_task_store(Request $request)
     {
-        $validated = $request->validate([
-            'task_name' => 'required|string|max:255',
-            'step_id' => 'required|integer',
-            'description' => 'string|max:255',
-            'confidence' => 'required|integer',
-            'order' => 'required|integer',
-            'is_loop' => 'required|boolean',
-            'is_stop_task' => 'required|boolean',
-            'value' => 'string|max:255',
-        ]);
+        try{
+            $request->merge([
+                'confidence' => (int) $request->input('confidence'),
+                'order' => (int) $request->input('order'),
+            ]);
 
+            $validated = $request->validate([
+                'task_name' => 'required|string|max:255',
+                'step_id' => 'required|integer',
+                'description' => 'string|max:255',
+                'confidence' => 'required|integer',
+                'order' => 'required|integer',
+                'is_loop' => 'required|boolean',
+                'is_stop_task' => 'required|boolean',
+                'value' => 'string|max:255',
+            ]);
+
+            
+            if ($request->hasFile('file') || $request->hasFile('file2') || $request->hasFile('file3')) {
+                $file1 = $request->file('file');
+                $file2 = $request->file('file2');
+                $file3 = $request->file('file3');
+
+                // Store file1
+                if ($file1) {
+                    $fileName = $file1->getClientOriginalName();
+                    $file1Path = $file1->store('uploads', 'public');
+
+                    $fileImg1 = new FileImg();
+                    $fileImg1->filename = $fileName;
+                    $fileImg1->file_path = $file1Path;
+                    $fileImg1->file_index = 1;
+                    $fileImg1->original_name = $fileName;
+                    $fileImg1->process_id = $processStep->process_id;
+                    $fileImg1->save();
+                }
+
+                // Store file2
+                if ($file2) {
+                    $fileName = $file2->getClientOriginalName();
+                    $file2Path = $file2->store('uploads', 'public');
         
-        if ($request->hasFile('file') || $request->hasFile('file2') || $request->hasFile('file3')) {
-            $file1 = $request->file('file');
-            $file2 = $request->file('file2');
-            $file3 = $request->file('file3');
+                    $fileImg2 = new FileImg();
+                    $fileImg2->filename = $fileName;
+                    $fileImg2->file_path = $file2Path;
+                    $fileImg2->file_index = 2;
+                    $fileImg2->original_name = $fileName;
+                    $fileImg2->process_id = $processStep->process_id;
+                    $fileImg2->save();
+                }
 
-            // Store file1
-            if ($file1) {
-                $fileName = $file1->getClientOriginalName();
-                $file1Path = $file1->store('uploads', 'public');
-
-                $fileImg1 = new FileImg();
-                $fileImg1->filename = $fileName;
-                $fileImg1->file_path = $file1Path;
-                $fileImg1->file_index = 1;
-                $fileImg1->original_name = $fileName;
-                $fileImg1->process_id = $processStep->process_id;
-                $fileImg1->save();
+                // Store file3
+                if ($file3) {
+                    $fileName = $file3->getClientOriginalName();
+                    $file3Path = $file3->store('uploads', 'public');
+        
+                    $fileImg3 = new FileImg();
+                    $fileImg3->filename = $fileName;
+                    $fileImg3->file_path = $file3Path;
+                    $fileImg3->file_index = 3;
+                    $fileImg3->original_name = $fileName;
+                    $fileImg3->process_id = $processStep->process_id;
+                    $fileImg3->save();
+                }
             }
+            $validated['create_by'] = Auth::id();
 
-            // Store file2
-            if ($file2) {
-                $fileName = $file2->getClientOriginalName();
-                $file2Path = $file2->store('uploads', 'public');
-    
-                $fileImg2 = new FileImg();
-                $fileImg2->filename = $fileName;
-                $fileImg2->file_path = $file2Path;
-                $fileImg2->file_index = 2;
-                $fileImg2->original_name = $fileName;
-                $fileImg2->process_id = $processStep->process_id;
-                $fileImg2->save();
-            }
+            $processTask = ProcessTask::create($validated);
 
-            // Store file3
-            if ($file3) {
-                $fileName = $file3->getClientOriginalName();
-                $file3Path = $file3->store('uploads', 'public');
-    
-                $fileImg3 = new FileImg();
-                $fileImg3->filename = $fileName;
-                $fileImg3->file_path = $file3Path;
-                $fileImg3->file_index = 3;
-                $fileImg3->original_name = $fileName;
-                $fileImg3->process_id = $processStep->process_id;
-                $fileImg3->save();
-            }
+            return response()->json($processTask);
         }
-        $validated['create_by'] = Auth::id();
-
-        $processTask = ProcessTask::create($validated);
-
-        return response()->json($processTask);
+        catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
     }
 }

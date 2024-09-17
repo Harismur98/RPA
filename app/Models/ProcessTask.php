@@ -29,6 +29,9 @@ class ProcessTask extends Model
         'is_stop_task',
         'value',
         'step_id',
+        'delete_by',
+        'create_by',
+        'description',
     ];
 
     /**

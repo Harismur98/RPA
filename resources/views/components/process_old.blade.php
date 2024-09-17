@@ -182,7 +182,7 @@
                         <div class="card-header">
                             <div class="d-flex align-items-center">
                                 <h4 class="card-title">Process Task</h4>
-                                <button class="btn btn-primary btn-round ms-auto" id="addProcessTaskButton" onclick="showAddTaskForm()">
+                                <button class="btn btn-primary btn-round ms-auto" id="addProcessStepButton" onclick="showAddTaskForm()">
                                     <i class="fa fa-plus"></i>
                                     Add Task
                                 </button>
@@ -190,7 +190,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table id="process-task-table" class="display table table-striped table-hover">
+                                <table id="process-step-table" class="display table table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th>Task Name</th>
@@ -198,57 +198,11 @@
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="process-task-table-body">
+                                    <tbody id="process-step-table-body">
                                         <!-- Dynamic rows will be appended here -->
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- The form column, hidden initially -->
-                <div class="col-md-6" id="process-task-form-container" style="display: none;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Add New Process Task</h4>
-                        </div>
-                        <div class="card-body">
-                            <form id="process-task-form" method="POST">
-                                @csrf
-                                <input type="hidden" id="step-id" name="step_id">
-                                <div class="form-group">
-                                    <label for="name">Task Name</label>
-                                    <input type="text" class="form-control" name="task_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea class="form-control" name="description" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="value">Value</label>
-                                    <textarea class="form-control" name="value" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="confidence">Confidence</label>
-                                    <textarea class="form-control" name="confidence" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="order">Order</label>
-                                    <textarea class="form-control" name="order" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="is_loop">Is Loop?</label>
-                                    <textarea class="form-control" name="is_loop" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="is_stop_task">Is Stop Task</label>
-                                    <textarea class="form-control" name="is_stop_task" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">Save Step</button>
-                                </div>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -306,9 +260,9 @@
                 processTableContainer.style.display = 'none';
                 processTaskContainer.style.display = 'block';
 
-                let stepId = button.getAttribute('data-step-id');
-                document.getElementById('step-id').value = stepId;
-                loadProcessTasks(stepId);
+                let stepsId = button.getAttribute('data-step-id');
+                document.getElementById('step-id').value = stepsId;
+                loadProcessTasks(stepsId);
             }
         }
 
@@ -329,7 +283,7 @@
                                         <!-- Action buttons for process steps -->
                                         <button class="btn btn-link btn-primary" onclick="editStep(${step.id})">Edit</button>
                                         <button class="btn btn-link btn-danger" onclick="deleteStep(${step.id})">Delete</button>
-                                        <button class="btn btn-link btn-info" data-step-id="${step.id}" onclick="toggleStepView(this)">
+                                        <button class="btn btn-link btn-info" data-process-id="${step.id}" onclick="toggleStepView(this)">
                                             <i class="fa fa-eye"></i> View
                                         </button>
                                     </td>
@@ -345,7 +299,7 @@
         }
 
         function loadProcessTasks(stepsId) {
-            fetch("{{ route('rpa.process_task.index') }}?step_id=" + stepsId)
+            fetch("{{ route('rpa.process_task.index') }}?process_id=" + processId)
                 .then(response => response.json())
                 .then(data => {
                     let processTaskTableBody = document.getElementById('process-task-table-body');
@@ -381,12 +335,6 @@
             document.getElementById('process-step-container').classList.add('col-md-6');
 
             document.getElementById('process-step-form-container').style.display = 'block';
-        }
-
-        function showAddTaskForm() {
-            document.getElementById('process-task-container').classList.remove('col-md-12');
-            document.getElementById('process-task-container').classList.add('col-md-6');
-            document.getElementById('process-task-form-container').style.display = 'block';
         }
 
         function editStep(stepId) {
@@ -432,43 +380,6 @@
                 document.getElementById('process-step-form-container').style.display = 'none';
             })
             .catch(error => console.error('Error adding process step:', error));
-        });
-
-        document.getElementById('process-task-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            let formData = new FormData(this);
-            let processId = document.getElementById('step-id').value;
-            let formAction = "{{ route('rpa.process_task.store') }}";
-
-            fetch(formAction, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Add the new process step to the table
-                let processTaskTableBody = document.getElementById('process-task-table-body');
-                let row = `
-                    <tr>
-                        <td>${data.task_name}</td>
-                        <td>${data.description}</td>
-                        <td>
-                            <button class="btn btn-link btn-primary" onclick="editTask(${data.id})">Edit</button>
-                            <button class="btn btn-link btn-danger" onclick="deleteTask(${data.id})">Delete</button>
-                        </td>
-                    </tr>
-                `;
-                processTaskTableBody.insertAdjacentHTML('beforeend', row);
-
-                // Clear the form fields
-                document.getElementById('process-task-form').reset();
-                document.getElementById('process-task-form-container').style.display = 'none';
-            })
-            .catch(error => console.error('Error adding process task:', error));
         });
 
     </script>

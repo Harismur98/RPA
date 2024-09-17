@@ -33,11 +33,15 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
         Route::prefix('process-step')->group(function () {
             Route::get('/index', [RPAController::class, 'process_step_index'])->name('rpa.process_step.index');
             Route::post('/store', [RPAController::class, 'process_step_store'])->name('rpa.process_step.store');
+            Route::post('/edit/{id}', [RPAController::class, 'process_step_edit'])->name('rpa.process_step.edit');
+            Route::post('/destroy/{id}', [RPAController::class, 'process_step_destroy'])->name('rpa.process_step.destroy');
         });
 
         Route::prefix('process-task')->group(function () {
             Route::get('/index', [RPAController::class, 'process_task_index'])->name('rpa.process_task.index');
             Route::post('/store', [RPAController::class, 'process_task_store'])->name('rpa.process_task.store');
+            Route::post('/edit/{id}', [RPAController::class, 'process_task_edit'])->name('rpa.process_task.edit');
+            Route::post('/destroy/{id}', [RPAController::class, 'process_task_destroy'])->name('rpa.process_task.destroy');
         });
     });
 

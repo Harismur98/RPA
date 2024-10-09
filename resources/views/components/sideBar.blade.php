@@ -81,6 +81,11 @@
                 <div class="collapse" id="rpa">
                   <ul class="nav nav-collapse">
                     <li>
+                      <a href="{{ route('rpa.template.index') }}">
+                        <span class="sub-item">Template</span>
+                      </a>
+                    </li>
+                    <li>
                       <a href="{{ route('rpa.process.index') }}">
                         <span class="sub-item">Process</span>
                       </a>

@@ -214,7 +214,7 @@
                             <h4 class="card-title">Add New Process Task</h4>
                         </div>
                         <div class="card-body">
-                            <form id="process-task-form" method="POST">
+                            <form id="process-task-form" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" id="step-id" name="step_id">
                                 <div class="form-group">
@@ -227,26 +227,59 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="value">Value</label>
-                                    <textarea class="form-control" name="value" required></textarea>
+                                    <input type="text" class="form-control" name="value" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="confidence">Confidence</label>
+                                            <input type="text" class="form-control" name="confidence" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="order">Order</label>
+                                            <input type="text" class="form-control" name="order" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="is_loop">Is Loop?</label>
+                                            <input type="text" class="form-control" name="is_loop" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="is_stop_task">Is Stop Task?</label>
+                                            <input type="text" class="form-control" name="is_stop_task" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="image1">Upload Image 1</label>
+                                            <input type="file" class="form-control" name="file1" accept="image/*" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="image2">Upload Image 2</label>
+                                            <input type="file" class="form-control" name="file2" accept="image/*" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="image3">Upload Image 3</label>
+                                            <input type="file" class="form-control" name="file3" accept="image/*" required>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="confidence">Confidence</label>
-                                    <textarea class="form-control" name="confidence" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="order">Order</label>
-                                    <textarea class="form-control" name="order" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="is_loop">Is Loop?</label>
-                                    <textarea class="form-control" name="is_loop" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="is_stop_task">Is Stop Task</label>
-                                    <textarea class="form-control" name="is_stop_task" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">Save Step</button>
+                                    <button type="submit" class="btn btn-primary">Save Task</button>
                                 </div>
                             </form>
                         </div>

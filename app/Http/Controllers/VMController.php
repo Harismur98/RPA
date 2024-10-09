@@ -16,6 +16,14 @@ class VMController extends Controller
         return view('components.vm', compact('vms'));
     }
 
+    public function getVM(Request $request){
+        // Fetch processes (you can still cache if needed)
+        $vms = VM::all();
+
+        // Return the processes as a JSON response
+        return response()->json($vms);
+    }
+
     // Show the form for creating a new resource.
     public function create()
     {

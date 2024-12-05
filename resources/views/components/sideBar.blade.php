@@ -86,6 +86,11 @@
                       </a>
                     </li>
                     <li>
+                      <a href="{{ route('rpa.action.index') }}">
+                        <span class="sub-item">Action list</span>
+                      </a>
+                    </li>
+                    <li>
                       <a href="{{ route('rpa.process.index') }}">
                         <span class="sub-item">Process</span>
                       </a>

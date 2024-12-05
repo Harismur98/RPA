@@ -50,14 +50,6 @@ class VMController extends Controller
         return redirect()->route('vms.index')->with('success', 'VM created successfully.');
     }
 
-
-    // Display the specified resource.
-    public function show($id)
-    {
-        $vm = VM::findOrFail($id);
-        return view('vm.show', compact('vm'));
-    }
-
     // Show the form for editing the specified resource.
     public function edit($id)
     {
@@ -107,4 +99,16 @@ class VMController extends Controller
         // Return the API key as a JSON response
         return response()->json(['api_key' => $apiKey]);
     }
+
+    public function show($id)
+    {
+        $vm = Vm::find($id);
+
+        if (!$vm) {
+            return response()->json(['message' => 'VM not found'], 404);
+        }
+
+        return response()->json($vm);
+    }
+    
 }

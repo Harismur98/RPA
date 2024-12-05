@@ -36,4 +36,9 @@ class ProcessStep extends Model
     {
         return $this->belongsTo(Process::class);
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(ProcessTask::class, 'step_id')->notDeleted() ;
+    }
 }

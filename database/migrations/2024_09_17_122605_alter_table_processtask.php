@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('delete_by')->references('id')->on('users');
             $table->unsignedBigInteger('create_by');
             $table->foreign('create_by')->references('id')->on('users');
+            $table->unsignedBigInteger('task_action');
+            $table->foreign('task_action')->references('id')->on('rpa_functions');
         });
     }
 

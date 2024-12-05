@@ -71,9 +71,12 @@
                                         <td>{{ $vm->last_handshake }}</td>
                                         <td>
                                             <div class="form-button-action">
-                                                <a href="{{ route('vms.edit', $vm->id) }}" class="btn btn-link btn-primary btn-lg" data-bs-toggle="tooltip" title="Edit Task">
+                                                <button type="button" class="btn btn-link btn-primary btn-edit-vm" data-vm-id="{{ $vm->id }}" data-bs-toggle="tooltip" title="Edit">
                                                     <i class="fa fa-edit"></i>
-                                                </a>
+                                                </button>
+                                                <button type="button" class="btn btn-link btn-info btn-view-vm" data-vm-id="{{ $vm->id }}" data-bs-toggle="tooltip" title="View">
+                                                    <i class="fa fa-eye"></i>
+                                                </button>
                                                 <form action="{{ route('vms.destroy', $vm->id) }}" method="POST" style="display:inline-block;">
                                                     @csrf
                                                     @method('DELETE')
@@ -120,6 +123,58 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Edit Form Column, hidden initially -->
+                    <div class="col-md-6" id="vm-edit-form-container" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Edit VM</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="editVmForm" action="" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="form-group">
+                                        <label for="edit_name">Name</label>
+                                        <input type="text" class="form-control" id="edit_name" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit_api_key">API Key</label>
+                                        <input type="text" class="form-control" id="edit_api_key" name="api_key" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Update VM</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View Form Column, hidden initially -->
+                    <div class="col-md-6" id="vm-view-form-container" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">View VM</h4>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <strong>Name:</strong>
+                                    <span id="view_name"></span>
+                                </div>
+                                <div>
+                                    <strong>API Key:</strong>
+                                    <span id="view_api_key"></span>
+                                </div>
+                                <div>
+                                    <strong>Last Handshake:</strong>
+                                    <span id="view_last_handshake"></span>
+                                </div>
+                                <div class="card-footer">
+                                    <button id="testVmButton" class="btn btn-warning">Test VM</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>			
@@ -146,5 +201,70 @@
                 })
                 .catch(error => console.error('Error:', error));
         });
+
+
+        document.getElementById('addVmButton').addEventListener('click', function () {
+            // Adjust table width and show the Add VM form
+            document.getElementById('vm-table-container').classList.remove('col-md-12');
+            document.getElementById('vm-table-container').classList.add('col-md-6');
+
+            // Show the Add VM form, hide others
+            document.getElementById('vm-form-container').style.display = 'block';
+            document.getElementById('vm-edit-form-container').style.display = 'none';
+            document.getElementById('vm-view-form-container').style.display = 'none';
+        });
+
+        document.querySelectorAll('.btn-edit-vm').forEach(button => {
+            button.addEventListener('click', function () {
+                const vmId = this.dataset.vmId;
+
+                // Make an AJAX request to fetch the VM details
+                fetch(`/vms/${vmId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the Edit form with VM data
+                        document.getElementById('edit_name').value = data.name;
+                        document.getElementById('edit_api_key').value = data.api_key;
+
+                        // Set the form action to the correct update route
+                        document.getElementById('editVmForm').action = `/vms/${vmId}`;
+
+                        // Adjust layout and display Edit form
+                        document.getElementById('vm-table-container').classList.remove('col-md-12');
+                        document.getElementById('vm-table-container').classList.add('col-md-6');
+
+                        document.getElementById('vm-edit-form-container').style.display = 'block';
+                        document.getElementById('vm-form-container').style.display = 'none';
+                        document.getElementById('vm-view-form-container').style.display = 'none';
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+        document.querySelectorAll('.btn-view-vm').forEach(button => {
+            button.addEventListener('click', function () {
+                const vmId = this.dataset.vmId;
+
+                // Make an AJAX request to fetch the VM details
+                fetch(`/vms/${vmId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Populate the View form with VM data
+                        document.getElementById('view_name').textContent = data.name;
+                        document.getElementById('view_api_key').textContent = data.api_key;
+                        document.getElementById('view_last_handshake').textContent = data.last_handshake;
+
+                        // Adjust layout and display View form
+                        document.getElementById('vm-table-container').classList.remove('col-md-12');
+                        document.getElementById('vm-table-container').classList.add('col-md-6');
+
+                        document.getElementById('vm-view-form-container').style.display = 'block';
+                        document.getElementById('vm-form-container').style.display = 'none';
+                        document.getElementById('vm-edit-form-container').style.display = 'none';
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
       </script>
 @endsection

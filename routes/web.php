@@ -50,11 +50,22 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
             Route::get('/index', [RPAController::class, 'template_index'])->name('rpa.template.index');
             Route::post('/store', [RPAController::class, 'template_store'])->name('rpa.template.store');
             Route::post('/edit/{id}', [RPAController::class, 'template_edit'])->name('rpa.template.edit');
+            Route::post('/template/update', [RPAController::class, 'updateTemplate'])->name('rpa.template.update');
             Route::post('/destroy/{id}', [RPAController::class, 'template_destroy'])->name('rpa.template.destroy');
         });
 
         Route::prefix('job')->group(function () {
-            Route::post('/add-job', [RPAController::class, 'addJob'])->name('rpa.template.addJob');
+            Route::post('/add-job/{id}', [RPAController::class, 'addJob'])->name('rpa.template.addJob');
+            
+        });
+
+        Route::prefix('rpa-action')->group(function (){
+            Route::get('/index', [RPAController::class, 'rpa_action_index'])->name('rpa.action.index');
+            Route::post('/store', [RPAController::class, 'rpa_action_store'])->name('rpa.action.store');
+            Route::post('/edit/{id}', [RPAController::class, 'rpa_action_edit'])->name('rpa.action.edit');
+            Route::post('/destroy/{id}', [RPAController::class, 'rpa_action_destroy'])->name('rpa.action.destroy');
+
+            Route::get('/api', [RPAController::class, 'rpa_action_api'])->name('rpa.action.api');
         });
     });
 

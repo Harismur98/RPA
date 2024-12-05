@@ -22,6 +22,7 @@ class ProcessTask extends Model
      * @var array
      */
     protected $fillable = [
+        'task_action',
         'task_name',
         'confidence',
         'order',
@@ -40,5 +41,15 @@ class ProcessTask extends Model
     public function step()
     {
         return $this->belongsTo(ProcessStep::class);
+    }
+
+    public function img()
+    {
+        return $this->hasMany(Fileimg::class);
+    }
+
+    public function scopeNotDeleted($query)
+    {
+        return $query->where('delete_by', 1);
     }
 }

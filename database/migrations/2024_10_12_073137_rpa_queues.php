@@ -11,14 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create ("status", function (Blueprint $table){
+        Schema::create("rpa_queues", function (Blueprint $table){
             $table->id();
-            $table->string('name');
-            $table->string('color_code');
+            $table->unsignedBigInteger('job_id');
+            $table->foreign('job_id')->references('id')->on('job_templates');
+            $table->unsignedBigInteger('status_id');
+            $table->foreign('status_id')->references('id')->on('status');
             $table->unsignedBigInteger('delete_by')->nullable()->default(1);
             $table->foreign('delete_by')->references('id')->on('users');
             $table->unsignedBigInteger('create_by');
             $table->foreign('create_by')->references('id')->on('users');
+            
             $table->timestamps();
         });
     }

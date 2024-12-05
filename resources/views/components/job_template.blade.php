@@ -32,12 +32,12 @@
                     </li>
                 </ul>
                 <div class="ms-auto">
-                    <button id="addJobButton" class="btn btn-primary">Add Job</button>
+                    <form id="addJobForm" method="POST">
+                        @csrf
+                        <input type="hidden" id="selectedJobId" name="id">
+                        <button type="button" id="addJobButton" class="btn btn-primary">Add Job</button>
+                    </form>
                 </div>
-                <form id="addJobForm" action="{{ route('rpa.template.addJob') }}" method="POST" style="display:none;">
-                    @csrf
-                    <input type="hidden" name="selected_job_id" id="selectedJobId" value="">
-                </form>
             </div>
             <div class="row">
                 <!-- The table column -->
@@ -48,7 +48,7 @@
                                 <h4 class="card-title">Job Template</h4>
                                 <button
                                     class="btn btn-primary btn-round ms-auto"
-                                    id="addjOBButton"
+                                    id="addTemplateButton"
                                 >
                                     <i class="fa fa-plus"></i>
                                     Add Template
@@ -77,22 +77,27 @@
                             </tfoot>
                             <tbody>
                                 @foreach($template as $jobTemplate)
-                                    <tr data-id="{{ $jobTemplate->id }}">
+                                    <tr data-id="{{ $jobTemplate->id }}" id="template-row-{{$jobTemplate->id}}">
                                         <td>{{ $jobTemplate->name }}</td>
                                         <td>{{ $jobTemplate->process ? $jobTemplate->process->process_name : 'No process' }}</td>
                                         <td>{{ $jobTemplate->vm ? $jobTemplate->vm->name : 'No VM' }}</td>
                                         <td>
                                             <div class="form-button-action">
-                                                <a href="{{ route('rpa.template.edit', $jobTemplate->id) }}" class="btn btn-link btn-primary btn-lg" data-bs-toggle="tooltip" title="Edit Task">
+                                                <button 
+                                                    class="btn btn-link btn-primary btn-lg edit-template-button" 
+                                                    data-id="{{ $jobTemplate->id }}" 
+                                                    data-name="{{ $jobTemplate->name }}" 
+                                                    data-description="{{ $jobTemplate->description }}" 
+                                                    data-vm-name="{{ $jobTemplate->vm ? $jobTemplate->vm->name : '' }}" 
+                                                    data-process-id="{{ $jobTemplate->process_id }}"
+                                                    title="Edit"
+                                                >
                                                     <i class="fa fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('rpa.template.destroy', $jobTemplate->id) }}" method="POST" style="display:inline-block;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-link btn-danger" data-bs-toggle="tooltip" title="Remove">
+                                                </button>
+
+                                                    <button type="submit" class="btn btn-link btn-danger" onclick="deleteItem({{ $jobTemplate->id }},'template')" data-bs-toggle="tooltip" title="Remove">
                                                         <i class="fa fa-times"></i>
                                                     </button>
-                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -105,41 +110,79 @@
                   </div>
 
                   <!-- The form column, hidden initially -->
-                <div class="col-md-6" id="template-form-container" style="display: none;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Add New Template</h4>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('rpa.template.store') }}" method="POST">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="name">Name</label>
-                                    <input type="text" class="form-control" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea class="form-control" name="description" required></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="processSelect">Select Process</label>
-                                    <select class="form-select" name="process_id" id="processSelect" required>
-                                        <option value="" disabled selected>Loading processes...</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="vmSelect">Select VM</label>
-                                    <select class="form-select" name="vm_id" id="vmSelect" required>
-                                        <option value="" disabled selected>Loading vm...</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">Save Process</button>
-                                </div>
-                            </form>
+                <!-- Adjusted for unique IDs and improved handling -->
+                    <div class="col-md-6" id="add-template-form-container" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Add New Template</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('rpa.template.store') }}" method="POST">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <input type="text" class="form-control" name="name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="description">Description</label>
+                                        <textarea class="form-control" name="description" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="processSelectAdd">Select Process</label>
+                                        <select class="form-select" name="process_id" id="processSelectAdd" required>
+                                            <option value="" disabled selected>Loading processes...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="vmSelectAdd">Select VM</label>
+                                        <select class="form-select" name="vm_id" id="vmSelectAdd" required>
+                                            <option value="" disabled selected>Loading vm...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Save Process</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="col-md-6" id="edit-template-form-container" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Edit Template</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="editTemplateForm" action="{{ route('rpa.template.update') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id" id="templateId">
+                                    <div class="form-group">
+                                        <label for="templateName">Name</label>
+                                        <input type="text" class="form-control" name="name" id="templateName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="templateDescription">Description</label>
+                                        <textarea class="form-control" name="description" id="templateDescription" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="processSelectEdit">Select Process</label>
+                                        <select class="form-select" name="process_id" id="processSelectEdit" required>
+                                            <option value="" disabled selected>Loading processes...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="vmSelectEdit">VM Name</label>
+                                        <select class="form-select" name="vm_id" id="vmSelectEdit" required>
+                                            <option value="" disabled selected>Loading vm...</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                
 
             </div>
         </div>
@@ -162,8 +205,12 @@
 
         $('#addJobButton').on('click', function() {
             if (selectedJobId) {
-                // Set the selected job ID in the hidden form
+                // Set the hidden input with the selected job template ID
                 $('#selectedJobId').val(selectedJobId);
+                
+                // Set the form action URL with the selected job template ID
+                const baseUrl = "{{ url('rpa/job/add-job') }}";
+                $('#addJobForm').attr('action', `${baseUrl}/${selectedJobId}`);
                 
                 // Submit the form
                 $('#addJobForm').submit();
@@ -172,33 +219,103 @@
             }
         });
         
-        document.querySelector('#button').addEventListener('click', function () {
-            alert(table.rows('.selected').data().length + ' row(s) selected');
-        });
+        // document.querySelector('#button').addEventListener('click', function () {
+        //     alert(table.rows('.selected').data().length + ' row(s) selected');
+        // });
 
 
-        document.getElementById('addjOBButton').addEventListener('click', function() {
+        document.getElementById('addTemplateButton').addEventListener('click', function() {
             // Change the table's grid from col-md-12 to col-md-6
             document.getElementById('template-table-container').classList.remove('col-md-12');
             document.getElementById('template-table-container').classList.add('col-md-6');
 
             // Show the form container
-            document.getElementById('template-form-container').style.display = 'block';
+            document.getElementById('add-template-form-container').style.display = 'block';
+            loadDropdowns();
+        });
 
+        function deleteItem(itemId, type) {
+            const confirmMessage = `Are you sure you want to delete this ${type}?`;
+            const routeUrl = {
+                template: "{{ route('rpa.template.destroy', '') }}/",
+
+            };
+
+            if (confirm(confirmMessage)) {
+                fetch(routeUrl[type] + itemId, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the deleted item row from the table
+                        document.getElementById(`${type}-row-${itemId}`).remove();
+
+
+                        //kena remove table yg terbukak
+
+
+                        
+                        console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`);
+                    } else {
+                        console.error(`Failed to delete ${type}:`, data.message);
+                    }
+                })
+                .catch(error => console.error(`Error deleting ${type}:`, error));
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-template-button');
+            loadDropdowns('edit');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Extract data from the clicked row
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    const description = this.getAttribute('data-description');
+                    const vm_name = this.getAttribute('data-vm-name');
+                    const processId = this.getAttribute('data-process-id');
+
+                    // Populate the form fields
+                    document.getElementById('templateId').value = id;
+                    document.getElementById('templateName').value = name;
+                    document.getElementById('templateDescription').value = description;
+                    document.getElementById('vmSelectEdit').value = vm_name;
+
+                    const processSelect = document.getElementById('processSelectEdit');
+                    [...processSelect.options].forEach(option => {
+                        option.selected = option.value == processId;
+                    });
+
+                    // Adjust layout
+                    document.getElementById('template-table-container').classList.remove('col-md-12');
+                    document.getElementById('template-table-container').classList.add('col-md-6');
+                    document.getElementById('edit-template-form-container').style.display = 'block';
+                });
+            });
+        });
+
+        function loadDropdowns(type = 'add') {
+            // Adjusted to pass the form type
+            const processSelect = (type === 'add') ? $('#processSelectAdd') : $('#processSelectEdit');
+            const vmSelect = (type === 'add') ? $('#vmSelectAdd') : $('#vmSelectEdit');
+
+            // Load processes and VMs for both cases
             $.ajax({
                 url: '{{ route("get.processes") }}',
                 method: 'GET',
-                success: function(data) {
-                    var select = $('#processSelect');
-                    select.empty();  // Clear the previous options
-                    select.append('<option value="" disabled selected>Select a process</option>');
-
-                    // Populate the select dropdown with the processes
-                    $.each(data, function(index, process) {
-                        select.append('<option value="' + process.id + '">' + process.process_name + '</option>');
+                success: function (data) {
+                    processSelect.empty();
+                    processSelect.append('<option value="" disabled selected>Select a process</option>');
+                    data.forEach(process => {
+                        processSelect.append(`<option value="${process.id}">${process.process_name}</option>`);
                     });
                 },
-                error: function() {
+                error: function () {
                     alert('Failed to load processes. Please try again.');
                 }
             });
@@ -206,22 +323,17 @@
             $.ajax({
                 url: '{{ route("get.vm") }}',
                 method: 'GET',
-                success: function(data) {
-                    var select = $('#vmSelect');
-                    select.empty();  // Clear the previous options
-                    select.append('<option value="" disabled selected>Select a vm</option>');
-
-                    // Populate the select dropdown with the processes
-                    $.each(data, function(index, vm) {
-                        select.append('<option value="' + vm.id + '">' + vm.name + '</option>');
+                success: function (data) {
+                    vmSelect.empty();
+                    vmSelect.append('<option value="" disabled selected>Select a VM</option>');
+                    data.forEach(vm => {
+                        vmSelect.append(`<option value="${vm.id}">${vm.name}</option>`);
                     });
                 },
-                error: function() {
-                    alert('Failed to load processes. Please try again.');
+                error: function () {
+                    alert('Failed to load VMs. Please try again.');
                 }
             });
-        });
-
-
+            }
     </script>
 @endsection

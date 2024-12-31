@@ -109,8 +109,6 @@
                     </div>
                   </div>
 
-                  <!-- The form column, hidden initially -->
-                <!-- Adjusted for unique IDs and improved handling -->
                     <div class="col-md-6" id="add-template-form-container" style="display: none;">
                         <div class="card">
                             <div class="card-header">

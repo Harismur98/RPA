@@ -5,6 +5,7 @@ use App\Http\Controllers\VMController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RPAController;
+use App\Http\Controllers\RPAController_test;
 
 
 
@@ -29,7 +30,7 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
             Route::post('/store', [RPAController::class, 'processStore'])->name('rpa.process.store');
             Route::post('/edit/{id}', [RPAController::class, 'processEdit'])->name('rpa.process.edit');
             Route::post('/destroy/{id}', [RPAController::class, 'processDestroy'])->name('rpa.process.destroy');
-            Route::get('/get-processes', [RPAController::class, 'getProcesses'])->name('get.processes');
+            Route::get('/get-processes/{id}', [RPAController::class, 'getProcesses'])->name('rpa.get.processes');
         });
 
         Route::prefix('process-step')->group(function () {
@@ -37,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
             Route::post('/store', [RPAController::class, 'process_step_store'])->name('rpa.process_step.store');
             Route::post('/edit/{id}', [RPAController::class, 'process_step_edit'])->name('rpa.process_step.edit');
             Route::post('/destroy/{id}', [RPAController::class, 'process_step_destroy'])->name('rpa.process_step.destroy');
+            Route::get('/get-step/{id}', [RPAController::class, 'getStep'])->name('rpa.get.step');
         });
 
         Route::prefix('process-task')->group(function () {
@@ -44,6 +46,15 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
             Route::post('/store', [RPAController::class, 'process_task_store'])->name('rpa.process_task.store');
             Route::post('/edit/{id}', [RPAController::class, 'process_task_edit'])->name('rpa.process_task.edit');
             Route::post('/destroy/{id}', [RPAController::class, 'process_task_destroy'])->name('rpa.process_task.destroy');
+            Route::get('/get-task/{id}', [RPAController::class, 'getTask'])->name('rpa.get.task');
+        });
+
+        Route::prefix('process-exception')->group(function () {
+            Route::get('/index', [RPAController::class, 'process_exception_index'])->name('rpa.process_exception.index');
+            Route::post('/store', [RPAController::class, 'process_exception_store'])->name('rpa.process_exception.store');
+            Route::post('/edit/{id}', [RPAController::class, 'process_exception_edit'])->name('rpa.process_exception.edit');
+            Route::post('/destroy/{id}', [RPAController::class, 'process_exception_destroy'])->name('rpa.process_exception.destroy');
+            Route::get('/get-exception/{id}', [RPAController::class, 'getException'])->name('rpa.get.exception');
         });
 
         Route::prefix('template')->group(function () {

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Process;
 use App\Models\ProcessStep;
 use App\Models\ProcessTask;
+use App\Models\ProcessException;
 use App\Models\FileImg;
 use App\Models\Job_template;
 use App\Models\RPA_action;
@@ -23,9 +24,9 @@ class RPAController extends Controller
         return view('components.process', compact('process'));
     }
 
-    public function getProcesses(Request $request){
+    public function getProcesses($id){
         // Fetch processes (you can still cache if needed)
-        $processes = Process::where('delete_by', '=', 1) -> get();
+        $processes = Process::where('delete_by', '=', 1) -> where('id', '=', $id) -> get();
 
         // Return the processes as a JSON response
         return response()->json($processes);
@@ -105,6 +106,13 @@ class RPAController extends Controller
         ]);
     }
 
+    public function getStep($id){
+
+        $step = ProcessStep::where('delete_by', '=', 1) -> where('id', '=', $id) -> get();
+
+        return response()->json($step);
+    }
+
     public function process_task_index(Request $request)
     {
         $processStepId = $request->query('step_id');
@@ -121,9 +129,17 @@ class RPAController extends Controller
         return response()->json($processTasks);
     }
 
+    public function getTask($id){
+
+        $task = ProcessTask::with('img')
+                            ->where('delete_by', '=', 1) 
+                            -> where('id', '=', $id) 
+                            -> get();
+        return response()->json($task);
+    }
+
     public function process_task_store(Request $request)
     {
-
         
         try{
             $request->merge([
@@ -213,6 +229,134 @@ class RPAController extends Controller
 
     public function process_task_destroy($id){
         $task = ProcessTask::find($id);
+
+        $task->delete_by = Auth::id();
+        $task->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task deleted successfully',
+        ]);
+    }
+
+    public function process_exception_index(Request $request)
+    {
+        $processStepId = $request->query('step_id');
+
+        // Validate processStepId if necessary
+        if (!$processStepId) {
+            return response()->json(['error' => 'Process Step ID is required'], 400);
+        }
+
+        $processTasks = ProcessException::where('step_id', $processStepId)
+                                ->where('delete_by', '=', 1)
+                                ->get();
+
+        return response()->json($processTasks);
+    }
+
+    public function getException($id){
+
+        $exception = ProcessException::with('img')
+                            ->where('delete_by', '=', 1) 
+                            -> where('id', '=', $id) 
+                            -> get();
+        return response()->json($exception);
+    }
+
+    public function process_exception_store(Request $request)
+    {
+        
+        try{
+            $request->merge([
+                'confidence' => (int) $request->input('confidence'),
+                'order' => (int) $request->input('order'),
+                'is_loop' => $request->input('is_loop') === null ? 0 : 1,
+                'is_stop_task' => $request->input('is_stop_task') === null ? 0 : 1,
+                'description' => $request->input('description') === null ? '': '',
+                'value' => $request->input('value') === null ? '': '',
+            ]);
+            
+
+            $validated = $request->validate([
+                'exception_name' => 'required|string|max:255',
+                'step_id' => 'required|integer',
+                'description' => 'string|max:255',
+                'confidence' => 'integer',
+                'order' => 'integer',
+                'is_loop' => 'boolean',
+                'is_stop_task' => 'boolean',
+                'value' => 'string|max:255',
+                'task_action' => 'required|integer',
+            ]);
+
+            Log::info($request->all());
+            
+            $validated['create_by'] = Auth::id();
+
+            $processException = ProcessException::create($validated);
+            
+            if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
+                $file1 = $request->file('file1');
+                $file2 = $request->file('file2');
+                $file3 = $request->file('file3');
+
+                // Store file1
+                if ($file1) {
+                    $fileName = $file1->getClientOriginalName();
+                    $file1Path = $file1->store('uploads', 'public');
+
+                    $fileImg1 = new FileImg();
+                    $fileImg1->filename = $fileName;
+                    $fileImg1->file_path = $file1Path;
+                    $fileImg1->file_index = 1;
+                    $fileImg1->original_name = $fileName;
+                    $fileImg1->process_task_id = $processTask->id;
+                    $fileImg1->save();
+                }
+
+                // Store file2
+                if ($file2) {
+                    $fileName = $file2->getClientOriginalName();
+                    $file2Path = $file2->store('uploads', 'public');
+        
+                    $fileImg2 = new FileImg();
+                    $fileImg2->filename = $fileName;
+                    $fileImg2->file_path = $file2Path;
+                    $fileImg2->file_index = 2;
+                    $fileImg2->original_name = $fileName;
+                    $fileImg2->process_task_id = $processTask->id;
+                    $fileImg2->save();
+                }
+
+                // Store file3
+                if ($file3) {
+                    $fileName = $file3->getClientOriginalName();
+                    $file3Path = $file3->store('uploads', 'public');
+        
+                    $fileImg3 = new FileImg();
+                    $fileImg3->filename = $fileName;
+                    $fileImg3->file_path = $file3Path;
+                    $fileImg3->file_index = 3;
+                    $fileImg3->original_name = $fileName;
+                    $fileImg3->process_task_id = $processTask->id;
+                    $fileImg3->save();
+                }
+            }
+            
+            return response()->json($processException);
+        }
+        catch (ValidationException $e) {
+            Log::info($request->all());
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
+    }
+
+    public function process_exception_destroy($id){
+        $task = ProcessException::find($id);
 
         $task->delete_by = Auth::id();
         $task->save();
@@ -321,7 +465,7 @@ class RPAController extends Controller
         $taskDetails = [];
         
         foreach ($processSteps as $step) {
-            $tasks = $step->tasks; // Ensure tasks relationship is set in ProcessStep model
+            $tasks = $step->tasks; 
         
             $stepDetails[] = [
                 'step_id' => $step->id,

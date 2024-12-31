@@ -14,7 +14,7 @@ class ProcessException extends Model
      *
      * @var string
      */
-    protected $table = 'process_exceptions';
+    protected $table = 'processexceptions';
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +29,10 @@ class ProcessException extends Model
         'is_stop_task',
         'value',
         'step_id',
+        'task_action',
+        'delete_by',
+        'create_by',
+        'description',
     ];
 
     /**
@@ -37,5 +41,15 @@ class ProcessException extends Model
     public function step()
     {
         return $this->belongsTo(ProcessStep::class);
+    }
+
+    public function img()
+    {
+        return $this->hasMany(Fileimg::class);
+    }
+
+    public function scopeNotDeleted($query)
+    {
+        return $query->where('delete_by', 1);
     }
 }

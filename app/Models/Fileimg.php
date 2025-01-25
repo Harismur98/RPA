@@ -15,6 +15,7 @@ class Fileimg extends Model
         'original_name',
         'file_path',
         'file_index',
+        'process_exception_id'
     ];
 
 }

@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('processSteps', function (Blueprint $table) {
-            $table->id();
-            $table->string('step_name');
-            $table->unsignedBigInteger('process_id');
-            $table->foreign('process_id')->references('id')->on('process');
-            $table->timestamps();
+        Schema::table('file_img', function (Blueprint $table) {
+            $table->foreignId('process_exception_id')->nullable()->constrained('processexceptions')->onDelete('cascade');
         });
     }
 

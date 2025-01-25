@@ -32,6 +32,12 @@ class RPAController extends Controller
         return response()->json($processes);
     }
 
+    public function getProcess(){
+        $process = Process::where('delete_by', '=', 1) -> get();
+
+        return response()->json($process);
+    }
+
     public function processStore(){
         $validated = request()->validate([
             'process_name' => 'required|string|max:255',
@@ -45,8 +51,21 @@ class RPAController extends Controller
         return redirect()->route('rpa.process.index')->with('success', 'Process created successfully.');
     }
 
-    public function processEdit($id){
+    public function processUpdate($id, Request $request){
         $process = Process::find($id);
+
+        if ($request->isMethod('PUT')) {
+            $validated = $request->validate([
+                'process_name' => 'required|string|max:255',
+                'description' => 'string|max:255',
+            ]);
+
+            $process->process_name = $validated['process_name'];
+            $process->description = $validated['description'];
+            $process->save();
+
+            return redirect()->route('rpa.process.index')->with('success', 'Process Updated successfully.');
+        }
 
         return response()->json($process);
     }
@@ -63,8 +82,7 @@ class RPAController extends Controller
         ]);
     }
 
-    public function process_step_index(Request $request)
-    {
+    public function process_step_index(Request $request){
         $processId = $request->query('process_id');
 
         // Validate processId if necessary
@@ -79,8 +97,7 @@ class RPAController extends Controller
         return response()->json($processSteps);
     }
 
-    public function process_step_store(Request $request)
-    {
+    public function process_step_store(Request $request){
         $validated = $request->validate([
             'step_name' => 'required|string|max:255',
             'process_id' => 'required|integer',
@@ -92,6 +109,25 @@ class RPAController extends Controller
         $processStep = ProcessStep::create($validated);
 
         return response()->json($processStep);
+    }
+
+    public function process_step_update($id, Request $request){
+        $step = ProcessStep::find($id);
+
+        if ($request->isMethod('PUT')) {
+            $validated = $request->validate([
+                'step_name' => 'required|string|max:255',
+                'description' => 'string|max:255',
+            ]);
+
+            $step->step_name = $validated['step_name'];
+            $step->description = $validated['description'];
+            $step->save();
+
+            return response()->json($step);
+        }
+
+        return response()->json($step);
     }
 
     public function process_step_destroy($id){
@@ -113,8 +149,7 @@ class RPAController extends Controller
         return response()->json($step);
     }
 
-    public function process_task_index(Request $request)
-    {
+    public function process_task_index(Request $request){
         $processStepId = $request->query('step_id');
 
         // Validate processStepId if necessary
@@ -138,8 +173,7 @@ class RPAController extends Controller
         return response()->json($task);
     }
 
-    public function process_task_store(Request $request)
-    {
+    public function process_task_store(Request $request){
         
         try{
             $request->merge([
@@ -227,6 +261,94 @@ class RPAController extends Controller
         }
     }
 
+    public function process_task_update($id, Request $request){
+        $task = ProcessTask::find($id);
+        
+        if ($request->isMethod('PUT')) {
+
+            $request->merge([
+                'confidence' => (int) $request->input('confidence'),
+                'order' => (int) $request->input('order'),
+                'description' => $request->input('description') ?? '',
+                'value' => (string) ($request->input('value') ?? ''),
+            ]);
+
+            $validated = $request->validate([
+                'task_name' => 'required|string|max:255',
+                'description' => 'string|max:255',
+                'confidence' => 'integer',
+                'order' => 'integer',
+                'is_loop' => 'boolean',
+                'is_stop_task' => 'boolean',
+                'value' => 'string|max:255',
+                'task_action' => 'required|integer',
+            ]);
+
+            $task->task_name = $validated['task_name'];
+            $task->description = $validated['description'];
+            $task->confidence = $validated['confidence'];
+            $task->order = $validated['order'];
+            $task->is_loop = $validated['is_loop'];
+            $task->is_stop_task = $validated['is_stop_task'];
+            $task->value = $validated['value'];
+            $task->task_action = $validated['task_action'];
+            $task->save();
+            
+            //delete old image files
+            FileImg::where('process_task_id', $task->id)->delete();
+
+            if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
+                $file1 = $request->file('file1');
+                $file2 = $request->file('file2');
+                $file3 = $request->file('file3');
+
+                // Store file1
+                if ($file1) {
+                    $fileName = $file1->getClientOriginalName();
+                    $file1Path = $file1->store('uploads', 'public');
+
+                    $fileImg1 = new FileImg();
+                    $fileImg1->filename = $fileName;
+                    $fileImg1->file_path = $file1Path;
+                    $fileImg1->file_index = 1;
+                    $fileImg1->original_name = $fileName;
+                    $fileImg1->process_task_id = $task->id;
+                    $fileImg1->save();
+                }
+
+                // Store file2
+                if ($file2) {
+                    $fileName = $file2->getClientOriginalName();
+                    $file2Path = $file2->store('uploads', 'public');
+        
+                    $fileImg2 = new FileImg();
+                    $fileImg2->filename = $fileName;
+                    $fileImg2->file_path = $file2Path;
+                    $fileImg2->file_index = 2;
+                    $fileImg2->original_name = $fileName;
+                    $fileImg2->process_task_id = $task->id;
+                    $fileImg2->save();
+                }
+
+                // Store file3
+                if ($file3) {
+                    $fileName = $file3->getClientOriginalName();
+                    $file3Path = $file3->store('uploads', 'public');
+        
+                    $fileImg3 = new FileImg();
+                    $fileImg3->filename = $fileName;
+                    $fileImg3->file_path = $file3Path;
+                    $fileImg3->file_index = 3;
+                    $fileImg3->original_name = $fileName;
+                    $fileImg3->process_task_id = $task->id;
+                    $fileImg3->save();
+                }
+            }
+            return response()->json($task);
+        }
+        return response()->json($task);
+    }
+
     public function process_task_destroy($id){
         $task = ProcessTask::find($id);
 
@@ -239,8 +361,7 @@ class RPAController extends Controller
         ]);
     }
 
-    public function process_exception_index(Request $request)
-    {
+    public function process_exception_index(Request $request){
         $processStepId = $request->query('step_id');
 
         // Validate processStepId if necessary
@@ -264,8 +385,7 @@ class RPAController extends Controller
         return response()->json($exception);
     }
 
-    public function process_exception_store(Request $request)
-    {
+    public function process_exception_store(Request $request){
         
         try{
             $request->merge([
@@ -273,8 +393,8 @@ class RPAController extends Controller
                 'order' => (int) $request->input('order'),
                 'is_loop' => $request->input('is_loop') === null ? 0 : 1,
                 'is_stop_task' => $request->input('is_stop_task') === null ? 0 : 1,
-                'description' => $request->input('description') === null ? '': '',
-                'value' => $request->input('value') === null ? '': '',
+                'description' => $request->input('description') ?? '',
+                'value' => (string) ($request->input('value') ?? ''),
             ]);
             
 
@@ -296,54 +416,69 @@ class RPAController extends Controller
 
             $processException = ProcessException::create($validated);
             
-            if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
-                $file1 = $request->file('file1');
-                $file2 = $request->file('file2');
-                $file3 = $request->file('file3');
+            // if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
+            //     $file1 = $request->file('file1');
+            //     $file2 = $request->file('file2');
+            //     $file3 = $request->file('file3');
 
-                // Store file1
-                if ($file1) {
-                    $fileName = $file1->getClientOriginalName();
-                    $file1Path = $file1->store('uploads', 'public');
+            //     // Store file1
+            //     if ($file1) {
+            //         $fileName = $file1->getClientOriginalName();
+            //         $file1Path = $file1->store('uploads', 'public');
 
-                    $fileImg1 = new FileImg();
-                    $fileImg1->filename = $fileName;
-                    $fileImg1->file_path = $file1Path;
-                    $fileImg1->file_index = 1;
-                    $fileImg1->original_name = $fileName;
-                    $fileImg1->process_task_id = $processTask->id;
-                    $fileImg1->save();
-                }
+            //         $fileImg1 = new FileImg();
+            //         $fileImg1->filename = $fileName;
+            //         $fileImg1->file_path = $file1Path;
+            //         $fileImg1->file_index = 1;
+            //         $fileImg1->original_name = $fileName;
+            //         $fileImg1->process_task_id = $processException->id;
+            //         $fileImg1->save();
+            //     }
 
-                // Store file2
-                if ($file2) {
-                    $fileName = $file2->getClientOriginalName();
-                    $file2Path = $file2->store('uploads', 'public');
+            //     // Store file2
+            //     if ($file2) {
+            //         $fileName = $file2->getClientOriginalName();
+            //         $file2Path = $file2->store('uploads', 'public');
         
-                    $fileImg2 = new FileImg();
-                    $fileImg2->filename = $fileName;
-                    $fileImg2->file_path = $file2Path;
-                    $fileImg2->file_index = 2;
-                    $fileImg2->original_name = $fileName;
-                    $fileImg2->process_task_id = $processTask->id;
-                    $fileImg2->save();
-                }
+            //         $fileImg2 = new FileImg();
+            //         $fileImg2->filename = $fileName;
+            //         $fileImg2->file_path = $file2Path;
+            //         $fileImg2->file_index = 2;
+            //         $fileImg2->original_name = $fileName;
+            //         $fileImg2->process_task_id = $processException->id;
+            //         $fileImg2->save();
+            //     }
 
-                // Store file3
-                if ($file3) {
-                    $fileName = $file3->getClientOriginalName();
-                    $file3Path = $file3->store('uploads', 'public');
+            //     // Store file3
+            //     if ($file3) {
+            //         $fileName = $file3->getClientOriginalName();
+            //         $file3Path = $file3->store('uploads', 'public');
         
-                    $fileImg3 = new FileImg();
-                    $fileImg3->filename = $fileName;
-                    $fileImg3->file_path = $file3Path;
-                    $fileImg3->file_index = 3;
-                    $fileImg3->original_name = $fileName;
-                    $fileImg3->process_task_id = $processTask->id;
-                    $fileImg3->save();
+            //         $fileImg3 = new FileImg();
+            //         $fileImg3->filename = $fileName;
+            //         $fileImg3->file_path = $file3Path;
+            //         $fileImg3->file_index = 3;
+            //         $fileImg3->original_name = $fileName;
+            //         $fileImg3->process_task_id = $processException->id;
+            //         $fileImg3->save();
+            //     }
+            // }
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $index => $file) {
+                    $fileName = $file->getClientOriginalName();
+                    $filePath = $file->store('uploads', 'public');
+    
+                    FileImg::create([
+                        'filename' => $fileName,
+                        'file_path' => $filePath,
+                        'file_index' => $index + 1,
+                        'original_name' => $fileName,
+                        'process_exception_id' => $processException->id,
+                    ]);
                 }
             }
-            
+
             return response()->json($processException);
         }
         catch (ValidationException $e) {
@@ -353,6 +488,63 @@ class RPAController extends Controller
                 'errors' => $e->errors()
             ], 422);
         }
+    }
+
+    public function process_exception_update($id, Request $request){
+        $task = ProcessException::find($id);
+        
+        if ($request->isMethod('PUT')) {
+
+            $request->merge([
+                'confidence' => (int) $request->input('confidence'),
+                'order' => (int) $request->input('order'),
+                'description' => $request->input('description') ?? '',
+                'value' => (string) ($request->input('value') ?? ''),
+            ]);
+
+            $validated = $request->validate([
+                'exception_name' => 'required|string|max:255',
+                'description' => 'string|max:255',
+                'confidence' => 'integer',
+                'order' => 'integer',
+                'is_loop' => 'boolean',
+                'is_stop_exception' => 'boolean',
+                'value' => 'string|max:255',
+                'task_action' => 'required|integer',
+            ]);
+
+            $task->exception_name = $validated['exception_name'];
+            $task->description = $validated['description'];
+            $task->confidence = $validated['confidence'];
+            $task->order = $validated['order'];
+            $task->is_loop = $validated['is_loop'];
+            $task->is_stop_task = $validated['is_stop_exception'];
+            $task->value = $validated['value'];
+            $task->task_action = $validated['task_action'];
+            $task->save();
+            
+            //delete old image files
+            FileImg::where('process_exception_id', $task->id)->delete();
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $index => $file) {
+                    $fileName = $file->getClientOriginalName();
+                    $filePath = $file->store('uploads', 'public');
+    
+                    FileImg::create([
+                        'filename' => $fileName,
+                        'file_path' => $filePath,
+                        'file_index' => $index + 1,
+                        'original_name' => $fileName,
+                        'process_exception_id' => $task->id,
+                    ]);
+                }
+            }
+            
+            return response()->json($task);
+        }
+        
+        return response()->json($task);
     }
 
     public function process_exception_destroy($id){
@@ -377,8 +569,7 @@ class RPAController extends Controller
         return view('components.job_template', compact('template'));
     }
 
-    public function template_store(Request $request)
-    {
+    public function template_store(Request $request){
         // Validate the request data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -407,8 +598,7 @@ class RPAController extends Controller
         return redirect()->route('rpa.template.index')->with('success', 'Template created successfully.');
     }
 
-    public function updateTemplate(Request $request)
-    {
+    public function updateTemplate(Request $request){
         $request->validate([
             'id' => 'required|exists:job_templates,id',
             'name' => 'required|string|max:255',
@@ -439,8 +629,7 @@ class RPAController extends Controller
         ]);
     }
 
-    public function addJob($id)
-    {
+    public function addJob($id){
         $jobTemplate = Job_template::findOrFail($id);
         $processId = $jobTemplate->process_id;
         
@@ -509,8 +698,7 @@ class RPAController extends Controller
         ], 201);
     }
 
-    public function getJobsForVm($api_key)
-    {
+    public function getJobsForVm($api_key){
         $jobs = Job::where('api_key', $api_key)
                     ->where('status', 'pending')
                     ->get();
@@ -518,8 +706,7 @@ class RPAController extends Controller
         return response()->json($jobs);
     }
 
-    public function updateJobStatus(Request $request, $api_key ,$job_id)
-    {
+    public function updateJobStatus(Request $request, $api_key ,$job_id){
         $job = Job::findOrFail($job_id);
  
         $job->update([
@@ -528,7 +715,6 @@ class RPAController extends Controller
 
         return response()->json(['message' => 'Job updated successfully']);
     }
-
 
     public function rpa_action_index(){
         $actions = RPA_action::where('delete_by', '=', 1) -> get();

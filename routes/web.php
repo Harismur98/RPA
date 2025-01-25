@@ -28,15 +28,16 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
         Route::prefix('process')->group(function () {
             Route::get('/index', [RPAController::class, 'processIndex'])->name('rpa.process.index');
             Route::post('/store', [RPAController::class, 'processStore'])->name('rpa.process.store');
-            Route::post('/edit/{id}', [RPAController::class, 'processEdit'])->name('rpa.process.edit');
+            Route::put('/edit/{id}', [RPAController::class, 'processUpdate'])->name('rpa.process.edit');
             Route::post('/destroy/{id}', [RPAController::class, 'processDestroy'])->name('rpa.process.destroy');
             Route::get('/get-processes/{id}', [RPAController::class, 'getProcesses'])->name('rpa.get.processes');
+            Route::get('/get-process', [RPAController::class, 'getProcess'])->name('rpa.get.process'); 
         });
 
         Route::prefix('process-step')->group(function () {
             Route::get('/index', [RPAController::class, 'process_step_index'])->name('rpa.process_step.index');
             Route::post('/store', [RPAController::class, 'process_step_store'])->name('rpa.process_step.store');
-            Route::post('/edit/{id}', [RPAController::class, 'process_step_edit'])->name('rpa.process_step.edit');
+            Route::put('/edit/{id}', [RPAController::class, 'process_step_update'])->name('rpa.process_step.update');
             Route::post('/destroy/{id}', [RPAController::class, 'process_step_destroy'])->name('rpa.process_step.destroy');
             Route::get('/get-step/{id}', [RPAController::class, 'getStep'])->name('rpa.get.step');
         });
@@ -44,7 +45,7 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
         Route::prefix('process-task')->group(function () {
             Route::get('/index', [RPAController::class, 'process_task_index'])->name('rpa.process_task.index');
             Route::post('/store', [RPAController::class, 'process_task_store'])->name('rpa.process_task.store');
-            Route::post('/edit/{id}', [RPAController::class, 'process_task_edit'])->name('rpa.process_task.edit');
+            Route::put('/edit/{id}', [RPAController::class, 'process_task_update'])->name('rpa.process_task.update');
             Route::post('/destroy/{id}', [RPAController::class, 'process_task_destroy'])->name('rpa.process_task.destroy');
             Route::get('/get-task/{id}', [RPAController::class, 'getTask'])->name('rpa.get.task');
         });
@@ -52,7 +53,7 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
         Route::prefix('process-exception')->group(function () {
             Route::get('/index', [RPAController::class, 'process_exception_index'])->name('rpa.process_exception.index');
             Route::post('/store', [RPAController::class, 'process_exception_store'])->name('rpa.process_exception.store');
-            Route::post('/edit/{id}', [RPAController::class, 'process_exception_edit'])->name('rpa.process_exception.edit');
+            Route::put('/edit/{id}', [RPAController::class, 'process_exception_update'])->name('rpa.process_exception.update');
             Route::post('/destroy/{id}', [RPAController::class, 'process_exception_destroy'])->name('rpa.process_exception.destroy');
             Route::get('/get-exception/{id}', [RPAController::class, 'getException'])->name('rpa.get.exception');
         });

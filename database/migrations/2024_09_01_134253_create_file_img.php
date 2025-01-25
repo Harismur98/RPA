@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('file_img', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('process_task_id')->constrained('processTasks')->onDelete('cascade');
+            $table->foreignId('process_task_id')->nullable()->constrained('processTasks')->onDelete('cascade');
             $table->text('filename');
             $table->text('original_name');
             $table->text('file_path');

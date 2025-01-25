@@ -3,7 +3,87 @@
 @section('content')
 <div class="main-panel">
     @include('components.navbarHeader')
+<style>
+    /* * {
+	box-sizing: border-box;
+} */
 
+input[type="file"] {
+	position: absolute;
+	right: -9999px;
+	visibility: hidden;
+	opacity: 0;
+}
+/* input[type="submit"] {
+	position: relative;
+	padding: 1rem 3rem;
+	background: #0c8fda;
+	display: inline-block;
+	text-align: center;
+	overflow: hidden;
+	border-radius: 10px;
+	border: 0;
+	color:#fff;
+	&:hover {
+		background: darken(#0c8fda, 5);
+		color: #fff;
+		cursor: pointer;
+		transition: 0.2s all;
+	} */
+}
+/* label {
+	position: relative;
+	padding: 1rem 3rem;
+	background: #eee;
+	display: inline-block;
+	text-align: center;
+	overflow: hidden;
+	border-radius: 10px;
+	&:hover {
+		background: #0c8fda;
+		color: #fff;
+		cursor: pointer;
+		transition: 0.2s all;
+	}
+} */
+
+div {
+	&.files {
+		background: #eee;
+		padding: 1rem;
+		margin:1rem 0;
+		border-radius:10px;
+		ul{
+			list-style:none;
+			padding:0;
+			max-height:150px;
+			overflow:auto;
+			li{
+				padding:0.5rem 0;
+				padding-right:2rem;
+				position:relative;
+				i{
+					cursor:pointer;
+					position:absolute;
+					top:50%;
+					right:0;
+					transform:translatey(-50%);
+				}
+			}
+		}
+	}
+	&.container {
+		width: 100%;
+		padding: 0 2rem;
+	}
+}
+
+span.file-size {
+	color: #999;
+	padding-left: 0.5rem;
+}
+
+</style>
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
@@ -85,7 +165,10 @@
                                                                 <td>{{ $p->description }}</td>
                                                                 <td>
                                                                     <div class="form-button-action">
-                                                                        <a href="{{ route('rpa.process.edit', $p->id) }}" class="btn btn-link btn-primary btn-lg" data-bs-toggle="tooltip" title="Edit Task">
+                                                                        <a href="#" class="btn btn-link btn-primary btn-lg" 
+                                                                            data-bs-toggle="tooltip" 
+                                                                            title="Edit Task" 
+                                                                            onclick="editProcess({{ $p->id }}, '{{ $p->process_name }}', '{{ $p->description }}' , '{{ route('rpa.process.edit', $p->id) }}')">
                                                                             <i class="fa fa-edit"> Edit</i>
                                                                         </a>
                                                                         <button class="btn btn-link btn-danger" onclick="deleteItem({{ $p->id }},'process')">Delete</button>
@@ -216,7 +299,7 @@
                                 <div class="col-md-6" id="process-step-form-container" style="display: none;">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h4 class="card-title">Add New Process Step</h4>
+                                            <h4 class="card-title">Add Step</h4>
                                         </div>
                                         <div class="card-body">
                                             <form id="process-step-form" method="POST">
@@ -349,37 +432,38 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="is_loop">Is Loop?</label>
-                                                        <input type="text" class="form-control" name="is_loop" >
+                                                        <div class="d-flex">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="is_loop" id="is_loop_yes" value="1">
+                                                                <label class="form-check-label" for="is_loop_yes">Yes</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="is_loop" id="is_loop_no" value="0">
+                                                                <label class="form-check-label" for="is_loop_no">No</label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="is_stop_task">Is Stop Task?</label>
-                                                        <input type="text" class="form-control" name="is_stop_task" >
+                                                        <div class="d-flex">
+                                                            <div class="form-check">
+                                                              <input class="form-check-input" type="radio" name="is_stop_task" id="flexRadioDefault1"value="1">
+                                                              <label class="form-check-label" for="flexRadioDefault1" >
+                                                                Yes
+                                                              </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                              <input class="form-check-input" type="radio"  name="is_stop_task" id="flexRadioDefault2" value="0"/>
+                                                              <label class="form-check-label" for="flexRadioDefault2" >
+                                                                No
+                                                              </label>
+                                                            </div>
+                                                          </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {{-- <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label>Click</label><br>
-                                                        <div class="d-flex">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="click" value="single">
-                                                                    <label class="form-check-label" for="click">
-                                                                        Single
-                                                                    </label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="click" value="double">
-                                                                    <label class="form-check-label" for="click">
-                                                                        Double
-                                                                    </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> --}}
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="form-group">
@@ -440,7 +524,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6" id="task-exception-info-container" style="display: none;">
+                            <div class="col-md-6" id="exception-info-container" style="display: none;">
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
@@ -451,6 +535,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
+                                        <p id="exception-info-ID"><strong>Id:</strong> <span></span></p>
                                         <p id="exception-info-name"><strong>Name:</strong> <span></span></p>
                                         <p id="exception-info-description"><strong>Description:</strong> <span></span></p>
                                         <p id="exception-info-action"><strong>Action:</strong> <span></span></p>
@@ -462,7 +547,7 @@
                                         <p id="exception-info-step"><strong>Step ID:</strong> <span></span></p>
                                         <p id="exception-info-created"><strong>Created By:</strong> <span></span></p>
                                         
-                                        <div id="excetion-images" class="mt-3">
+                                        <div id="exception-images" class="mt-3">
                                             <!-- Images will be dynamically added here -->
                                         </div>
                                     </div>
@@ -472,7 +557,7 @@
                             <div class="col-md-6" id="task-exception-form-container" style="display: none;">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h4 class="card-title">Add New Task Exception</h4>
+                                        <h4 class="card-title">Add Task Exception</h4>
                                     </div>
                                     <div class="card-body">
                                         <form id="task-exception-form" method="POST" enctype="multipart/form-data">
@@ -514,18 +599,36 @@
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="is_loop">Is Loop?</label>
-                                                        <input type="text" class="form-control" name="is_loop" >
+                                                        <div class="d-flex">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="is_loop" id="is_loop_yes" value="1">
+                                                                <label class="form-check-label" for="is_loop_yes">Yes</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="is_loop" id="is_loop_no" value="0">
+                                                                <label class="form-check-label" for="is_loop_no">No</label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="is_stop_task">Is Stop Exception?</label>
-                                                        <input type="text" class="form-control" name="is_stop_exception" >
+                                                        <div class="d-flex">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="is_stop_exception" id="is_stop_exception_yes" value="1">
+                                                                <label class="form-check-label" for="is_stop_exception_yes">Yes</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="is_stop_exception" id="is_stop_exception_no" value="0">
+                                                                <label class="form-check-label" for="is_stop_exception_no">No</label>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                {{-- <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="image1">Image 1</label>
                                                         <input type="file" class="form-control" name="file1" accept="image/*" >
@@ -541,6 +644,20 @@
                                                     <div class="form-group">
                                                         <label for="image3">Image 3</label>
                                                         <input type="file" class="form-control" name="file3" accept="image/*">
+                                                    </div>
+                                                </div> --}}
+
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="upload">
+                                                            <input type="file" id="upload" name="files[]" multiple>
+                                                            Upload Files
+                                                        </label>
+                                                        
+                                                        <div class="files">
+                                                            <h2>Files Selected</h2>
+                                                            <ul id="file-list"></ul>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -567,9 +684,25 @@
             document.getElementById('process-table-container').classList.remove('col-md-12');
             document.getElementById('process-table-container').classList.add('col-md-6');
 
+            // Reset form fields and title
+            const form = document.querySelector('#process-form-container form');
+            form.action = '/rpa/process/store'; // Update with your store route
+            form.method = 'POST'; // Default method
+
+            // Remove the hidden method input if it exists
+            const methodInput = form.querySelector('input[name="_method"]');
+            if (methodInput) methodInput.remove();
+
+            // Reset form fields
+            form.reset();
+
+            document.querySelector('#process-form-container .card-title').textContent = 'Add Process';
+            
             // Show the form container
             document.getElementById("process-info-container").style.display = "none";
             document.getElementById('process-form-container').style.display = 'block';
+
+            
         });
 
         function toggleProcessView(button) {
@@ -621,11 +754,11 @@
                         data.forEach(step => {
                             let row = `
                                 <tr id="step-row-${step.id}">
-                                    <td>${step.Step_name}</td>
+                                    <td>${step.step_name}</td>
                                     <td>${step.description}</td>
                                     <td>
                                         <!-- Action buttons for process steps -->
-                                        <button class="btn btn-link btn-primary" onclick="editStep(${step.id})">Edit</button>
+                                        <button class="btn btn-link btn-primary" onclick="editStep(${step.id}, '${step.step_name}', '${step.description}')">Edit</button>
                                         <button class="btn btn-link btn-danger" onclick="deleteItem(${step.id},'step')">Delete</button>
                                         <button class="btn btn-link btn-info" data-step-id="${step.id}" onclick="toggleStepView(this)">
                                             <i class="fa fa-eye"></i> View Task
@@ -662,9 +795,6 @@
                                         <!-- Action buttons for process tasks -->
                                         <button class="btn btn-link btn-primary" onclick="editTask(${task.id})">Edit</button>
                                         <button class="btn btn-link btn-danger" onclick="deleteItem(${task.id},'task')">Delete</button>
-                                        <button class="btn btn-link btn-info" data-process-id="${task.id}" onclick="toggleProcessView(this)">
-                                            <i class="fa fa-eye"></i> View
-                                        </button>
                                         <button class="btn btn-link btn-info" data-task-id="${task.id}"  onclick="showTaskDetails(this)">
                                             View Task
                                         </button>
@@ -696,9 +826,9 @@
                                     <td>${task.description}</td>
                                     <td>
                                         <!-- Action buttons for process tasks -->
-                                        <button class="btn btn-link btn-primary" onclick="editTask(${task.id})">Edit</button>
+                                        <button class="btn btn-link btn-primary" onclick="editException(${task.id})">Edit</button>
                                         <button class="btn btn-link btn-danger" onclick="deleteItem(${task.id},'exception')">Delete</button>
-                                        <button class="btn btn-link btn-info" data-task-id="${task.id}"  onclick="showExeptionDetails(this)">
+                                        <button class="btn btn-link btn-info" data-exception-id="${task.id}"  onclick="showExceptionDetails(this)">
                                             View Exception
                                         </button>
                                     </td>
@@ -716,6 +846,9 @@
         function showAddStepForm() {
             document.getElementById('process-step-container').classList.remove('col-md-12');
             document.getElementById('process-step-container').classList.add('col-md-6');
+            const form = document.querySelector('#process-step-form-container form');
+            form.reset();
+            document.querySelector('#process-step-form-container .card-title').textContent = 'Add Step';
             document.getElementById("step-info-container").style.display = "none";
             document.getElementById('process-step-form-container').style.display = 'block';
         }
@@ -725,6 +858,12 @@
             document.getElementById('process-task-container').classList.add('col-md-6');
             document.getElementById('process-task-form-container').style.display = 'block';
             document.getElementById("task-info-container").style.display = "none";
+
+            const form = document.querySelector('#process-task-form-container form');
+            form.setAttribute('data-mode', 'add');
+            form.reset();
+            document.querySelector('#process-task-form-container .card-title').textContent = 'Add Task';
+
             fetch("{{ route('rpa.action.api') }}")
             .then(response => response.json())
             .then(data => {
@@ -748,7 +887,12 @@
             document.getElementById('task-exception-container').classList.remove('col-md-12');
             document.getElementById('task-exception-container').classList.add('col-md-6');
             document.getElementById('task-exception-form-container').style.display = 'block';
-            document.getElementById("task-exception-info-container").style.display = "none";
+            document.getElementById("exception-info-container").style.display = "none";
+            const form = document.querySelector('#task-exception-form-container form');
+            form.setAttribute('data-mode', 'add');
+            form.reset();
+            document.querySelector('#task-exception-form-container .card-title').textContent = 'Add Exception';
+
             fetch("{{ route('rpa.action.api') }}")
             .then(response => response.json())
             .then(data => {
@@ -766,10 +910,6 @@
                 });
             })
             .catch(error => console.error('Error loading task actions:', error));
-        }
-
-        function editStep(stepId) {
-            console.log("Edit step with ID:", stepId);
         }
 
         function deleteItem(itemId, type) {
@@ -809,12 +949,23 @@
         }
 
         document.getElementById('process-step-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
+            event.preventDefault();
 
-            let formData = new FormData(this);
-            let processId = document.getElementById('process-id').value;
-            let formAction = "{{ route('rpa.process_step.store') }}";
+            const form = this;
+            const mode = form.getAttribute('data-mode') || 'add'; // Default to 'add' if no mode is set
+            const formData = new FormData(form);
 
+            // Determine route based on mode
+            let formAction;
+            if (mode === 'edit') {
+                const stepId = form.getAttribute('data-step-id');
+                formAction = "{{ route('rpa.process_step.update', ':id') }}".replace(':id', stepId);
+                formData.append('_method', 'PUT'); // Laravel method override for PUT
+            } else {
+                formAction = "{{ route('rpa.process_step.store') }}";
+            }
+
+            // Submit the form
             fetch(formAction, {
                 method: 'POST',
                 body: formData,
@@ -824,40 +975,65 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Add the new process step to the table
-                let processStepTableBody = document.getElementById('process-step-table-body');
-                let row = `
-                    <tr>
-                        <td>${data.step_name}</td>
-                        <td>${data.description}</td>
-                        <td>
-                            <button class="btn btn-link btn-primary" onclick="editStep(${data.id})">Edit</button>
-                            <button class="btn btn-link btn-danger" onclick="deleteStep(${data.id})">Delete</button>
-                            <button class="btn btn-link btn-info" data-step-id="{${data.id}}"  onclick="showStepDetails(this)">
-                                 View Step
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                processStepTableBody.insertAdjacentHTML('beforeend', row);
+                if (mode === 'edit') {
+                    // Update existing row
+                    const row = document.querySelector(`[data-step-id="${data.id}"]`).closest('tr');
+                    row.querySelector('td:nth-child(1)').textContent = data.step_name;
+                    row.querySelector('td:nth-child(2)').textContent = data.description;
+                } else {
+                    // Add new row
+                    const processStepTableBody = document.getElementById('process-step-table-body');
+                    const row = `
+                        <tr>
+                            <td>${data.step_name}</td>
+                            <td>${data.description}</td>
+                            <td>
+                                <button class="btn btn-link btn-primary" onclick="editStep(${data.id}, '${data.step_name}', '${data.description}')">Edit</button>
+                                <button class="btn btn-link btn-danger" onclick="deleteStep(${data.id})">Delete</button>
+                                <button class="btn btn-link btn-info" data-step-id="${data.id}" onclick="toggleStepView(this)">
+                                    <i class="fa fa-eye"></i> View Task
+                                </button>
+                                <button class="btn btn-link btn-info" data-step-id="${data.id}" onclick="showStepDetails(this)">
+                                    View Step
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    processStepTableBody.insertAdjacentHTML('beforeend', row);
+                }
 
-                // Clear the form fields
-                document.getElementById('process-step-form').reset();
+                // Reset and hide form
+                form.reset();
+                form.removeAttribute('data-mode'); // Clear mode
+                form.removeAttribute('data-step-id'); // Clear step ID
                 document.getElementById('process-step-form-container').style.display = 'none';
+                document.getElementById('process-step-container').classList.remove('col-md-6');
+                document.getElementById('process-step-container').classList.add('col-md-12');
             })
-            .catch(error => console.error('Error adding process step:', error));
+            .catch(error => console.error('Error:', error));
         });
+
 
         document.getElementById('process-task-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the default form submission
 
-            let formData = new FormData(this);
-            let processId = document.getElementById('step-id').value;
-            let formAction = "{{ route('rpa.process_task.store') }}";
+            const form = this;
+            const mode = form.getAttribute('data-mode') || 'add'; // Default to 'add' if no mode is set
+            const formData = new FormData(form);
+
+            let formAction;
+            if (mode === 'edit') {
+                const taskId = form.getAttribute('data-task-id');
+                formAction = "{{ route('rpa.process_task.update', ':id') }}".replace(':id', taskId);
+                formData.append('_method', 'PUT'); // Laravel method override for PUT
+            } else {
+                formAction = "{{ route('rpa.process_task.store') }}";
+            }
 
             let formObject = {};
             formData.forEach((value, key) => {
                 formObject[key] = value;
+                console.log(key, value)
             });
             console.log("Form data as JSON:", JSON.stringify(formObject));
             fetch(formAction, {
@@ -880,26 +1056,39 @@
                 });
             })
             .then(data => {
-                // Add the new process step to the table
-                let processTaskTableBody = document.getElementById('process-task-table-body');
-                let row = `
-                    <tr id="step-row-${data.id}">
-                        <td>${data.task_name}</td>
-                        <td>${data.description}</td>
-                        <td>
-                            <button class="btn btn-link btn-primary" onclick="editTask(${data.id})">Edit</button>
-                            <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id},'task')">Delete</button>
-                            <button class="btn btn-link btn-info" data-task-id="${data.id}"  onclick="showTaskDetails(this)">
-                                View Task
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                processTaskTableBody.insertAdjacentHTML('beforeend', row);
+
+                
+                if (mode === 'edit') {
+                    // Update existing row
+                    console.log("sini");
+                    const row = document.querySelector(`[data-task-id="${data.id}"]`).closest('tr');
+                    row.querySelector('td:nth-child(1)').textContent = data.task_name;
+                    row.querySelector('td:nth-child(2)').textContent = data.description;
+                } else {
+                    // Add new row
+                    console.log("situ");
+                    const processExceptionTableBody = document.getElementById('process-task-table-body');
+                    const row = `
+                        <tr> 
+                            <td>${data.task_name}</td>
+                            <td>${data.description}</td>
+                            <td>
+                                <button class="btn btn-link btn-primary" onclick="editTask(${data.id}, '${data.exception_name}', '${data.description}')">Edit</button>
+                                <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id},'task')">Delete</button>
+                                <button class="btn btn-link btn-info" data-task-id="${data.id}" onclick="showTaskDetails(this)">
+                                    View Exception
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    processExceptionTableBody.insertAdjacentHTML('beforeend', row);
+                }
 
                 // Clear the form fields
                 document.getElementById('process-task-form').reset();
                 document.getElementById('process-task-form-container').style.display = 'none';
+                document.getElementById('process-task-container').classList.remove('col-md-6');
+                document.getElementById('process-task-container').classList.add('col-md-12');
             })
             .catch(error => console.error('Error adding process task:', error));
         });
@@ -907,9 +1096,18 @@
         document.getElementById('task-exception-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the default form submission
 
-            let formData = new FormData(this);
-            let processId = document.getElementById('step-id').value;
-            let formAction = "{{ route('rpa.process_exception.store') }}";
+            const form = this;
+            const mode = form.getAttribute('data-mode') || 'add'; // Default to 'add' if no mode is set
+            const formData = new FormData(form);
+
+            let formAction;
+            if (mode === 'edit') {
+                const exceptionId = form.getAttribute('data-exception-id');
+                formAction = "{{ route('rpa.process_exception.update', ':id') }}".replace(':id', exceptionId);
+                formData.append('_method', 'PUT'); // Laravel method override for PUT
+            } else {
+                formAction = "{{ route('rpa.process_exception.store') }}";
+            }
 
             let formObject = {};
             formData.forEach((value, key) => {
@@ -938,25 +1136,29 @@
             .then(data => {
                 
                 
-                // Add the new process step to the table
-                let processTaskTableBody = document.getElementById('process-exception-table-body');
-                let noExceptionRow = processTaskTableBody.querySelector('tr td[colspan="3"]');
-                if (noExceptionRow) {
-                    noExceptionRow.parentElement.remove();
+                if (mode === 'edit') {
+                    // Update existing row
+                    const row = document.querySelector(`[data-exception-id="${data.id}"]`).closest('tr');
+                    row.querySelector('td:nth-child(1)').textContent = data.exception_name;
+                    row.querySelector('td:nth-child(2)').textContent = data.description;
+                } else {
+                    // Add new row
+                    const processExceptionTableBody = document.getElementById('process-exception-table-body');
+                    const row = `
+                        <tr> 
+                            <td>${data.exception_name}</td>
+                            <td>${data.description}</td>
+                            <td>
+                                <button class="btn btn-link btn-primary" onclick="editException(${data.id}, '${data.exception_name}', '${data.description}')">Edit</button>
+                                <button class="btn btn-link btn-danger" onclick="deleteException(${data.id})">Delete</button>
+                                <button class="btn btn-link btn-info" data-exception-id="${data.id}" onclick="showExceptionDetails(this)">
+                                    View Exception
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    processExceptionTableBody.insertAdjacentHTML('beforeend', row);
                 }
-                let row = `
-                    <tr id="exception-row-${data.id}">
-                        <td>${data.exception_name}</td>
-                        <td>${data.description}</td>
-                        <td>
-                            <button class="btn btn-link btn-primary" onclick="editTask(${data.id})">Edit</button>
-                            <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id},'exception')">Delete</button>
-                            <button class="btn btn-link btn-info" data-task-id="${data.id}"  onclick="showExceptionDetails(this)">
-                                View Exception
-                        </td>
-                    </tr>
-                `;
-                processTaskTableBody.insertAdjacentHTML('beforeend', row);
 
                 // Clear the form fields
                 document.getElementById('task-exception-form').reset();
@@ -1075,6 +1277,58 @@
                 .catch((error) => console.error("Error fetching task details:", error));
         }
 
+        function showExceptionDetails(row) {
+            const taskID = row.getAttribute('data-exception-id');
+
+            fetch("{{ route('rpa.get.exception', ':id') }}".replace(':id', taskID))
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.length > 0) {
+                        const task = data[0]; // Assuming one task is returned
+
+                        // Update task details
+                        document.querySelector("#exception-info-ID span").innerText = task.id;
+                        document.querySelector("#exception-info-name span").innerText = task.exception_name;
+                        document.querySelector("#exception-info-description span").innerText = task.description;
+
+                        document.querySelector("#exception-info-action span").innerText = task.task_action;
+                        document.querySelector("#exception-info-confidence span").innerText = task.confidence + '%';
+                        document.querySelector("#exception-info-order span").innerText = task.order;
+                        document.querySelector("#exception-info-loop span").innerText = task.is_loop ? "Yes" : "No";
+                        document.querySelector("#exception-info-stop span").innerText = task.is_stop_task ? "Yes" : "No";
+                        document.querySelector("#exception-info-value span").innerText = task.value;
+                        document.querySelector("#exception-info-step span").innerText = task.step_id;
+                        document.querySelector("#exception-info-created span").innerText = task.create_by;
+
+                        // Update layout
+                        document.getElementById('task-exception-container').classList.remove('col-md-12');
+                        document.getElementById('task-exception-container').classList.add('col-md-6');
+                        document.getElementById('task-exception-form-container').style.display = 'none';
+                        document.getElementById("exception-info-container").style.display = "block";
+
+                        // Handle images
+                        const imageContainer = document.getElementById('exception-images');
+                        imageContainer.innerHTML = ''; // Clear previous images
+                        const assetBaseUrl = "{{ asset('storage/') }}/";
+                        if (task.img && task.img.length > 0) {
+                            task.img.forEach(image => {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = assetBaseUrl + image.file_path; // Assuming `file_path` contains the image URL
+                                imgElement.alt = task.task_name;
+                                imgElement.className = 'img-fluid mb-2'; // Add Bootstrap classes for styling
+                                imageContainer.appendChild(imgElement);
+                            });
+                        } else {
+                            const noImageMessage = document.createElement('p');
+                            noImageMessage.innerText = 'No images available for this task.';
+                            imageContainer.appendChild(noImageMessage);
+                        }
+                    }
+                })
+                .catch((error) => console.error("Error fetching task details:", error));
+        }
+
+
 
         document.getElementById('remove_task_details').addEventListener('click', function(event){
             document.getElementById('process-task-container').classList.remove('col-md-6');
@@ -1084,7 +1338,255 @@
             document.getElementById("task-info-container").style.display = "none";
         });
 
-        
+        document.getElementById('remove_exception_details').addEventListener('click', function(event){
+            document.getElementById('task-exception-container').classList.remove('col-md-6');
+            document.getElementById('task-exception-container').classList.add('col-md-12');
+
+            // Show the form container
+            document.getElementById("exception-info-container").style.display = "none";
+        });
+
+        function editProcess(id, name, description, route) {
+            // Show the form container
+            document.getElementById('process-table-container').classList.remove('col-md-12');
+            document.getElementById('process-table-container').classList.add('col-md-6');
+            document.getElementById('process-form-container').style.display = 'block';
+
+            // Update form action and method
+            const form = document.querySelector('#process-form-container form');
+            form.action = route; // Update with your edit route
+            form.method = 'POST'; // Use POST with hidden method override for PUT
+
+            // Add hidden input for method override
+            if (!form.querySelector('input[name="_method"]')) {
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PUT';
+                form.appendChild(methodInput);
+            }
+
+            // Populate form fields
+            form.querySelector('input[name="process_name"]').value = name;
+            form.querySelector('textarea[name="description"]').value = description;
+
+            // Update form title
+            document.querySelector('#process-form-container .card-title').textContent = 'Edit Process';
+        }
+
+        function editStep(stepId, name, description) {
+            // Show the form container
+            document.getElementById('process-step-container').classList.remove('col-md-12');
+            document.getElementById('process-step-container').classList.add('col-md-6');
+            document.getElementById('process-step-form-container').style.display = 'block';
+
+            // Update form action and method
+            const form = document.querySelector('#process-step-form');
+            form.setAttribute('data-mode', 'edit');
+            form.setAttribute('data-step-id', stepId);
+
+            // Populate form fields
+            form.querySelector('input[name="step_name"]').value = name;
+            form.querySelector('textarea[name="description"]').value = description;
+
+            // Update form title
+            document.querySelector('#process-step-form-container .card-title').textContent = 'Edit Step';
+        }
+
+        function editTask(taskId) {
+            // Adjust the layout to show the form
+            document.getElementById('process-task-container').classList.remove('col-md-12');
+            document.getElementById('process-task-container').classList.add('col-md-6');
+            document.getElementById('process-task-form-container').style.display = 'block';
+            document.getElementById("task-info-container").style.display = "none";
+
+            // Load task actions first
+            fetch("{{ route('rpa.action.api') }}")
+                .then(response => response.json())
+                .then(actions => {
+                    let taskActionSelect = document.querySelector('#process-task-form select[name="task_action"]');
+
+                    // Clear existing options
+                    taskActionSelect.innerHTML = '';
+
+                    // Populate dropdown with task actions
+                    actions.forEach(action => {
+                        let option = document.createElement('option');
+                        option.value = action.id; // Assuming `id` is the unique identifier
+                        option.textContent = action.function_name; // Assuming `function_name` is the label for the action
+                        taskActionSelect.appendChild(option);
+                    });
+
+                    // Fetch task details only after task actions are loaded
+                    return fetch(`{{ route('rpa.get.task', ':id') }}`.replace(':id', taskId));
+                })
+                .then(response => response.json())
+                .then(firstdata => {
+                    const form = document.getElementById('process-task-form');
+                    form.setAttribute('data-task-id', taskId); // Store the task ID
+                    form.setAttribute('data-mode', 'edit'); // Set mode to 'edit'
+                    data = firstdata[0]; // Assuming one task is returned
+
+                    // Populate form fields
+                    form.querySelector('input[name="task_name"]').value = data.task_name;
+                    form.querySelector('select[name="task_action"]').value = data.task_action; // Set the selected action
+                    form.querySelector('textarea[name="description"]').value = data.description;
+                    form.querySelector('input[name="value"]').value = data.value;
+                    form.querySelector('input[name="confidence"]').value = data.confidence;
+                    form.querySelector('input[name="order"]').value = data.order;
+                     // Set the correct radio button for is_loop
+                    const isLoopYes = form.querySelector('input[name="is_loop"][value="1"]');
+                    const isLoopNo = form.querySelector('input[name="is_loop"][value="0"]');
+                    if (data.is_loop === 1) {
+                        isLoopYes.checked = true;
+                        isLoopNo.checked = false;
+                    } else {
+                        isLoopYes.checked = false;
+                        isLoopNo.checked = true;
+                    }
+
+                    // Set the correct radio button for is_stop_task
+                    const isStopTaskYes = form.querySelector('input[name="is_stop_task"][value="1"]');
+                    const isStopTaskNo = form.querySelector('input[name="is_stop_task"][value="0"]');
+                    if (data.is_stop_task === 1) {
+                        isStopTaskYes.checked = true;
+                        isStopTaskNo.checked = false;
+                    } else {
+                        isStopTaskYes.checked = false;
+                        isStopTaskNo.checked = true;
+                    }
+
+                    // Update form title
+                    document.querySelector('#process-task-form-container .card-title').textContent = 'Edit Process Task';
+                })
+                .catch(error => console.error('Error fetching task actions or details:', error));
+        }
+
+        function editException(taskId) {
+            // Adjust the layout to show the form
+            document.getElementById('task-exception-container').classList.remove('col-md-12');
+            document.getElementById('task-exception-container').classList.add('col-md-6');
+            document.getElementById('task-exception-form-container').style.display = 'block';
+            document.getElementById("exception-info-container").style.display = "none";
+            // document.getElementById("task-info-container").style.display = "none";
+
+            // Load task actions first
+            fetch("{{ route('rpa.action.api') }}")
+                .then(response => response.json())
+                .then(actions => {
+                    let taskActionSelect = document.querySelector('#task-exception-form select[name="task_action"]');
+
+                    // Clear existing options
+                    taskActionSelect.innerHTML = '';
+
+                    // Populate dropdown with task actions
+                    actions.forEach(action => {
+                        let option = document.createElement('option');
+                        option.value = action.id; // Assuming `id` is the unique identifier
+                        option.textContent = action.function_name; // Assuming `function_name` is the label for the action
+                        taskActionSelect.appendChild(option);
+                    });
+
+                    // Fetch task details only after task actions are loaded
+                    return fetch(`{{ route('rpa.get.exception', ':id') }}`.replace(':id', taskId));
+                })
+                .then(response => response.json())
+                .then(firstdata => {
+                    const form = document.getElementById('task-exception-form');
+                    form.setAttribute('data-exception-id', taskId); // Store the task ID
+                    form.setAttribute('data-mode', 'edit'); // Set mode to 'edit'
+                    data = firstdata[0]; // Assuming one task is returned
+                    // Populate form fields
+                    form.querySelector('input[name="exception_name"]').value = data.exception_name;
+                    form.querySelector('select[name="task_action"]').value = data.task_action; // Set the selected action
+                    form.querySelector('textarea[name="description"]').value = data.description;
+                    form.querySelector('input[name="value"]').value = data.value;
+                    form.querySelector('input[name="confidence"]').value = data.confidence;
+                    form.querySelector('input[name="order"]').value = data.order;
+                    // Set the correct radio button for is_loop
+                    const isLoopYes = form.querySelector('input[name="is_loop"][value="1"]');
+                    const isLoopNo = form.querySelector('input[name="is_loop"][value="0"]');
+                    if (data.is_loop === 1) {
+                        isLoopYes.checked = true;
+                        isLoopNo.checked = false;
+                    } else {
+                        isLoopYes.checked = false;
+                        isLoopNo.checked = true;
+                    }
+
+                    // Set the correct radio button for is_stop_task
+                    const isStopTaskYes = form.querySelector('input[name="is_stop_exception"][value="1"]');
+                    const isStopTaskNo = form.querySelector('input[name="is_stop_exception"][value="0"]');
+                    if (data.is_stop_task === 1) {
+                        isStopTaskYes.checked = true;
+                        isStopTaskNo.checked = false;
+                    } else {
+                        isStopTaskYes.checked = false;
+                        isStopTaskNo.checked = true;
+                    }
+
+                    // Update form title
+                    document.querySelector('#task-exception-form-container .card-title').textContent = 'Edit Exception';
+                })
+                .catch(error => console.error('Error fetching task actions or details:', error));
+        }
+
+        // file upload script------------------------
+        // no react or anything
+        let state = {};
+
+        // state management
+        function updateState(newState) {
+            state = { ...state, ...newState };
+            console.log(state);
+        }
+
+        // event handlers
+        $("#upload").change(function(e) {
+            const files = Array.from(this.files);
+            updateState({ filesArr: files });
+            renderFileList();
+        });
+
+        $(".files").on("click", "li > i", function(e) {
+            let key = $(this)
+                .parent()
+                .attr("key");
+            let curArr = state.filesArr;
+            curArr.splice(key, 1);
+            updateState({ filesArr: curArr });
+            renderFileList();
+        });
+
+        $("form").on("submit", function(e) {
+            e.preventDefault();
+            console.log(state);
+            renderFileList();
+        });
+
+        // render functions
+        function renderFileList() {
+            const fileList = document.getElementById('file-list'); // Target specific list
+            let fileMap = state.filesArr.map((file, index) => {
+                let suffix = "bytes";
+                let size = file.size;
+                if (size >= 1024 && size < 1024000) {
+                    suffix = "KB";
+                    size = Math.round(size / 1024 * 100) / 100;
+                } else if (size >= 1024000) {
+                    suffix = "MB";
+                    size = Math.round(size / 1024000 * 100) / 100;
+                }
+
+                return `<li key="${index}">${
+                    file.name
+                } <span class="file-size">${size} ${suffix}</span><i class="material-icons md-48">delete</i></li>`;
+            });
+
+            // Join the fileMap array into a single string and set the innerHTML of the specific list
+            fileList.innerHTML = fileMap.join('');
+        }
+        // file upload script------------------------
     </script>
 </div>
 @endsection

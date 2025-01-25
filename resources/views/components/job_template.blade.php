@@ -304,7 +304,7 @@
 
             // Load processes and VMs for both cases
             $.ajax({
-                url: '{{ route("get.processes") }}',
+                url: '{{ route("rpa.get.process") }}',
                 method: 'GET',
                 success: function (data) {
                     processSelect.empty();

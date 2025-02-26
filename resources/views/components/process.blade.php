@@ -4,84 +4,84 @@
 <div class="main-panel">
     @include('components.navbarHeader')
 <style>
-    /* * {
-	box-sizing: border-box;
-} */
+        /* * {
+        box-sizing: border-box;
+    } */
 
-input[type="file"] {
-	position: absolute;
-	right: -9999px;
-	visibility: hidden;
-	opacity: 0;
-}
-/* input[type="submit"] {
-	position: relative;
-	padding: 1rem 3rem;
-	background: #0c8fda;
-	display: inline-block;
-	text-align: center;
-	overflow: hidden;
-	border-radius: 10px;
-	border: 0;
-	color:#fff;
-	&:hover {
-		background: darken(#0c8fda, 5);
-		color: #fff;
-		cursor: pointer;
-		transition: 0.2s all;
-	} */
-}
-/* label {
-	position: relative;
-	padding: 1rem 3rem;
-	background: #eee;
-	display: inline-block;
-	text-align: center;
-	overflow: hidden;
-	border-radius: 10px;
-	&:hover {
-		background: #0c8fda;
-		color: #fff;
-		cursor: pointer;
-		transition: 0.2s all;
-	}
-} */
+    input[type="file"] {
+        position: absolute;
+        right: -9999px;
+        visibility: hidden;
+        opacity: 0;
+    }
+    /* input[type="submit"] {
+        position: relative;
+        padding: 1rem 3rem;
+        background: #0c8fda;
+        display: inline-block;
+        text-align: center;
+        overflow: hidden;
+        border-radius: 10px;
+        border: 0;
+        color:#fff;
+        &:hover {
+            background: darken(#0c8fda, 5);
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s all;
+        } */
+    }
+    /* label {
+        position: relative;
+        padding: 1rem 3rem;
+        background: #eee;
+        display: inline-block;
+        text-align: center;
+        overflow: hidden;
+        border-radius: 10px;
+        &:hover {
+            background: #0c8fda;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s all;
+        }
+    } */
 
-div {
-	&.files {
-		background: #eee;
-		padding: 1rem;
-		margin:1rem 0;
-		border-radius:10px;
-		ul{
-			list-style:none;
-			padding:0;
-			max-height:150px;
-			overflow:auto;
-			li{
-				padding:0.5rem 0;
-				padding-right:2rem;
-				position:relative;
-				i{
-					cursor:pointer;
-					position:absolute;
-					top:50%;
-					right:0;
-					transform:translatey(-50%);
-				}
-			}
-		}
-	}
-	&.container {
-		width: 100%;
-		padding: 0 2rem;
-	}
-}
+    div {
+        &.files {
+            background: #eee;
+            padding: 1rem;
+            margin:1rem 0;
+            border-radius:10px;
+            ul{
+                list-style:none;
+                padding:0;
+                max-height:150px;
+                overflow:auto;
+                li{
+                    padding:0.5rem 0;
+                    padding-right:2rem;
+                    position:relative;
+                    i{
+                        cursor:pointer;
+                        position:absolute;
+                        top:50%;
+                        right:0;
+                        transform:translatey(-50%);
+                    }
+                }
+            }
+        }
+        &.container {
+            width: 100%;
+            padding: 0 2rem;
+        }
+    }
 
-span.file-size {
-	color: #999;
-	padding-left: 0.5rem;
-}
+    span.file-size {
+        color: #999;
+        padding-left: 0.5rem;
+    }
 
 </style>
     <div class="container">
@@ -345,6 +345,7 @@ span.file-size {
                                                     <tr>
                                                         <th>Task Name</th>
                                                         <th>Description</th>
+                                                        <th>Order</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -465,7 +466,7 @@ span.file-size {
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                {{-- <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="image1">Image 1</label>
                                                         <input type="file" class="form-control" name="file1" accept="image/*" >
@@ -482,6 +483,19 @@ span.file-size {
                                                         <label for="image3">Image 3</label>
                                                         <input type="file" class="form-control" name="file3" accept="image/*">
                                                     </div>
+                                                </div> --}}
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="uploadTask">
+                                                            <input type="file" id="uploadTask" name="files[]" multiple>
+                                                            Upload Files
+                                                        </label>
+                                                        
+                                                        <div class="files">
+                                                            <h2>Files Selected</h2>
+                                                            <ul id="file-list-task"></ul>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -494,7 +508,86 @@ span.file-size {
                         </div>
 
                         <div class="row">
-                            <div class="col-md-12" id="task-exception-container" style="display: block;">
+                            <div class="col-md-12" id="process-step-exception-container" style="display: block;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex align-items-center">
+                                            <h4 class="card-title">Step Exception</h4>
+                                            <button class="btn btn-primary btn-round ms-auto" id="addStepExceptionButton" onclick="showAddStepExceptionForm()">
+                                                <i class="fa fa-plus"></i>
+                                                Add Step Exception
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table id="step-exception-table" class="display table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Step Exception</th>
+                                                        <th>Description</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="process-step-exception-table-body">
+                                                    <!-- Dynamic rows will be appended here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="step-exception-info-container" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="d-flex align-items-center">
+                                            <h4 class="card-title">Step Exception Details</h4>
+                                            <button class="btn btn-danger btn-xs ms-auto" id="remove_step_details">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p id="step-info-name"><strong>Name:</strong> <span></span></p>
+                                        <p id="step-info-description"><strong>Description:</strong> <span></span></p>
+                                        <!-- Add other fields as necessary -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- The form column, hidden initially -->
+                            <div class="col-md-6" id="process-step-exception-form-container" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Add Step Exception</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="process-step-exception-form" method="POST">
+                                            @csrf
+                                            <input type="hidden" id="step-id3" name="step_id">
+                                            <div class="form-group">
+                                                <label for="name">Step Exception Name</label>
+                                                <input type="text" class="form-control" name="name" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="description">Description</label>
+                                                <textarea class="form-control" name="description" ></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-md-12" id="task-exception-container" style="display: none;">
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="d-flex align-items-center">
@@ -512,6 +605,7 @@ span.file-size {
                                                     <tr>
                                                         <th>Exception Name</th>
                                                         <th>Description</th>
+                                                        <th>Order</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -649,14 +743,14 @@ span.file-size {
 
                                                 <div class="col-md-4">
                                                     <div class="form-group">
-                                                        <label for="upload">
-                                                            <input type="file" id="upload" name="files[]" multiple>
+                                                        <label for="uploadException">
+                                                            <input type="file" id="uploadException" name="files[]" multiple>
                                                             Upload Files
                                                         </label>
                                                         
                                                         <div class="files">
                                                             <h2>Files Selected</h2>
-                                                            <ul id="file-list"></ul>
+                                                            <ul id="file-list-exception"></ul>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -672,6 +766,7 @@ span.file-size {
                         </div>
                     </div>
                 </div>
+            
         </div>
     </div>
 
@@ -735,12 +830,20 @@ span.file-size {
 
             // Load the relevant tasks for the clicked step
             let stepId = button.getAttribute('data-step-id');
-            document.getElementById('step-id').value = stepId;
-            document.getElementById('step-id2').value = stepId;
+            document.getElementById('step-id').value = stepId; 
+            document.getElementById('step-id3').value = stepId;
             loadProcessTasks(stepId);
-            loadProcessException(stepId);
+            loadProcessStepsException(stepId);
             let pillsTab = new bootstrap.Tab(taskTab);
             pillsTab.show();
+        }
+
+        function toggleStepExceptionView(button) {
+            let stepId = button.getAttribute('data-step-exception-id');
+
+            document.getElementById('step-id2').value = stepId;
+            document.getElementById('task-exception-container').style.display = 'block';
+            loadProcessException(stepId);
         }
 
         function loadProcessSteps(processId) {
@@ -778,6 +881,42 @@ span.file-size {
                 .catch(error => console.error('Error loading process steps:', error));
         }
 
+        function loadProcessStepsException(stepId) {
+            fetch("{{ route('rpa.process_step_exception.index') }}?step_id=" + stepId)
+                .then(response => response.json())
+                .then(data => {
+                    let processStepTableBody = document.getElementById('process-step-exception-table-body');
+                    processStepTableBody.innerHTML = '';
+
+                    if (data.length > 0) {
+                        // console.log(data);
+                        data.forEach(step => {
+                            let row = `
+                                <tr id="step_exception-row-${step.id}">
+                                    <td>${step.name}</td>
+                                    <td>${step.description}</td>
+                                    <td>
+                                        <!-- Action buttons for process steps -->
+                                        <button class="btn btn-link btn-primary" onclick="editStepException(${step.id}, '${step.name}', '${step.description}')">Edit</button>
+                                        <button class="btn btn-link btn-danger" onclick="deleteItem(${step.id},'step_exception')">Delete</button>
+                                        <button class="btn btn-link btn-info" data-step-exception-id="${step.id}" onclick="toggleStepExceptionView(this)">
+                                            <i class="fa fa-eye"></i> View Exception
+                                        </button>
+                                        <button class="btn btn-link btn-info" data-step-exception-id="${step.id}"  onclick="showStepExceptionDetails(this)">
+                                            View Step
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            processStepTableBody.insertAdjacentHTML('beforeend', row);
+                        });
+                    } else {
+                        processStepTableBody.innerHTML = '<tr><td colspan="3">No step Exception found for this process.</td></tr>';
+                    }
+                })
+                .catch(error => console.error('Error loading process steps:', error));
+        }
+
         function loadProcessTasks(stepsId) {
             fetch("{{ route('rpa.process_task.index') }}?step_id=" + stepsId)
                 .then(response => response.json())
@@ -786,11 +925,13 @@ span.file-size {
                     processTaskTableBody.innerHTML = '';
 
                     if (data.length > 0) {
+                        data = data.sort((a, b) => a.order - b.order);
                         data.forEach(task => {
                             let row = `
                                 <tr id="task-row-${task.id}">
                                     <td>${task.task_name}</td>
                                     <td>${task.description}</td>
+                                    <td>${task.order}</td>
                                     <td>
                                         <!-- Action buttons for process tasks -->
                                         <button class="btn btn-link btn-primary" onclick="editTask(${task.id})">Edit</button>
@@ -804,7 +945,7 @@ span.file-size {
                             processTaskTableBody.insertAdjacentHTML('beforeend', row);
                         });
                     } else {
-                        processTaskTableBody.innerHTML = '<tr><td colspan="3">No Task found for this Step.</td></tr>';
+                        processTaskTableBody.innerHTML = '<tr><td colspan="4">No Task found for this Step.</td></tr>';
                     }
                 })
                 .catch(error => console.error('Error loading process Task:', error));
@@ -824,6 +965,7 @@ span.file-size {
                                 <tr id="exception-row-${task.id}">
                                     <td>${task.exception_name}</td>
                                     <td>${task.description}</td>
+                                    <td>${task.order}</td>
                                     <td>
                                         <!-- Action buttons for process tasks -->
                                         <button class="btn btn-link btn-primary" onclick="editException(${task.id})">Edit</button>
@@ -851,6 +993,16 @@ span.file-size {
             document.querySelector('#process-step-form-container .card-title').textContent = 'Add Step';
             document.getElementById("step-info-container").style.display = "none";
             document.getElementById('process-step-form-container').style.display = 'block';
+        }
+
+        function showAddStepExceptionForm() {
+            document.getElementById('process-step-exception-container').classList.remove('col-md-12');
+            document.getElementById('process-step-exception-container').classList.add('col-md-6');
+            const form = document.querySelector('#process-step-exception-form-container form');
+            form.reset();
+            document.querySelector('#process-step-exception-form-container .card-title').textContent = 'Add Step Exception';
+            document.getElementById("step-exception-info-container").style.display = "none";
+            document.getElementById('process-step-exception-form-container').style.display = 'block';
         }
 
         function showAddTaskForm() {
@@ -918,7 +1070,8 @@ span.file-size {
                 task: "{{ route('rpa.process_task.destroy', '') }}/",
                 step: "{{ route('rpa.process_step.destroy', '') }}/",
                 process: "{{ route('rpa.process.destroy', '') }}/",
-                exception: "{{ route('rpa.process_exception.destroy', '') }}/"
+                exception: "{{ route('rpa.process_exception.destroy', '') }}/",
+                step_exception: "{{ route('rpa.process_step_exception.destroy', '') }}/"
             };
 
             if (confirm(confirmMessage)) {
@@ -984,12 +1137,12 @@ span.file-size {
                     // Add new row
                     const processStepTableBody = document.getElementById('process-step-table-body');
                     const row = `
-                        <tr>
+                        <tr id="step-row-${data.id}">
                             <td>${data.step_name}</td>
                             <td>${data.description}</td>
                             <td>
                                 <button class="btn btn-link btn-primary" onclick="editStep(${data.id}, '${data.step_name}', '${data.description}')">Edit</button>
-                                <button class="btn btn-link btn-danger" onclick="deleteStep(${data.id})">Delete</button>
+                                <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id}, 'step')">Delete</button>
                                 <button class="btn btn-link btn-info" data-step-id="${data.id}" onclick="toggleStepView(this)">
                                     <i class="fa fa-eye"></i> View Task
                                 </button>
@@ -1009,6 +1162,71 @@ span.file-size {
                 document.getElementById('process-step-form-container').style.display = 'none';
                 document.getElementById('process-step-container').classList.remove('col-md-6');
                 document.getElementById('process-step-container').classList.add('col-md-12');
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('process-step-exception-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = this;
+            const mode = form.getAttribute('data-mode') || 'add'; // Default to 'add' if no mode is set
+            const formData = new FormData(form);
+
+            // Determine route based on mode
+            let formAction;
+            if (mode === 'edit') {
+                const stepId = form.getAttribute('data-step-exception-id');
+                formAction = "{{ route('rpa.process_step_exception.update', ':id') }}".replace(':id', stepId);
+                formData.append('_method', 'PUT'); // Laravel method override for PUT
+            } else {
+                formAction = "{{ route('rpa.process_step_exception.store') }}";
+            }
+
+            // Submit the form
+            fetch(formAction, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (mode === 'edit') {
+                    // Update existing row
+                    const row = document.querySelector(`[data-step-exception-id="${data.id}"]`).closest('tr');
+                    row.querySelector('td:nth-child(1)').textContent = data.name;
+                    row.querySelector('td:nth-child(2)').textContent = data.description;
+                } else {
+                    // Add new row
+                    const processStepTableBody = document.getElementById('process-step-exception-table-body');
+                    const row = `
+                        <tr id="step_exception-row-${data.id}">
+                            <td>${data.name}</td>
+                            <td>${data.description}</td>
+                            <td>
+                                <button class="btn btn-link btn-primary" onclick="editStepException(${data.id}, '${data.name}', '${data.description}')">Edit</button>
+                                <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id},'step_exception')">Delete</button>
+                                <button class="btn btn-link btn-info" data-step-exception-id="${data.id}" onclick="toggleStepExceptionView(this)">
+                                    <i class="fa fa-eye"></i> View Exception
+                                </button>
+                                <button class="btn btn-link btn-info" data-step-exception-id="${data.id}" onclick="showStepExceptionDetails(this)">
+                                    View Step
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    processStepTableBody.insertAdjacentHTML('beforeend', row);
+                }
+
+                // Reset and hide form
+                form.reset();
+                form.removeAttribute('data-mode'); // Clear mode
+                form.removeAttribute('data-step-exception-id'); // Clear step ID
+                document.getElementById('process-step-exception-form-container').style.display = 'none';
+                document.getElementById('process-step-exception-container').classList.remove('col-md-6');
+                document.getElementById('process-step-exception-container').classList.add('col-md-12');
             })
             .catch(error => console.error('Error:', error));
         });
@@ -1060,30 +1278,35 @@ span.file-size {
                 
                 if (mode === 'edit') {
                     // Update existing row
-                    console.log("sini");
+
                     const row = document.querySelector(`[data-task-id="${data.id}"]`).closest('tr');
                     row.querySelector('td:nth-child(1)').textContent = data.task_name;
                     row.querySelector('td:nth-child(2)').textContent = data.description;
+                    row.querySelector('td:nth-child(3)').textContent = data.order;
+                    // sortTable();
                 } else {
                     // Add new row
-                    console.log("situ");
+
                     const processExceptionTableBody = document.getElementById('process-task-table-body');
                     const row = `
-                        <tr> 
+                        <tr id="task-row-${data.id}"> 
                             <td>${data.task_name}</td>
                             <td>${data.description}</td>
+                            <td>${data.order}</td>
                             <td>
                                 <button class="btn btn-link btn-primary" onclick="editTask(${data.id}, '${data.exception_name}', '${data.description}')">Edit</button>
                                 <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id},'task')">Delete</button>
                                 <button class="btn btn-link btn-info" data-task-id="${data.id}" onclick="showTaskDetails(this)">
-                                    View Exception
+                                    View Task
                                 </button>
                             </td>
                         </tr>
                     `;
+                     
                     processExceptionTableBody.insertAdjacentHTML('beforeend', row);
+                     
                 }
-
+                sortTable(); 
                 // Clear the form fields
                 document.getElementById('process-task-form').reset();
                 document.getElementById('process-task-form-container').style.display = 'none';
@@ -1145,12 +1368,12 @@ span.file-size {
                     // Add new row
                     const processExceptionTableBody = document.getElementById('process-exception-table-body');
                     const row = `
-                        <tr> 
+                        <tr id="exception-row-${data.id}"> 
                             <td>${data.exception_name}</td>
                             <td>${data.description}</td>
                             <td>
                                 <button class="btn btn-link btn-primary" onclick="editException(${data.id}, '${data.exception_name}', '${data.description}')">Edit</button>
-                                <button class="btn btn-link btn-danger" onclick="deleteException(${data.id})">Delete</button>
+                                <button class="btn btn-link btn-danger" onclick="deleteItem(${data.id},'exception')">Delete</button>
                                 <button class="btn btn-link btn-info" data-exception-id="${data.id}" onclick="showExceptionDetails(this)">
                                     View Exception
                                 </button>
@@ -1328,8 +1551,6 @@ span.file-size {
                 .catch((error) => console.error("Error fetching task details:", error));
         }
 
-
-
         document.getElementById('remove_task_details').addEventListener('click', function(event){
             document.getElementById('process-task-container').classList.remove('col-md-6');
             document.getElementById('process-task-container').classList.add('col-md-12');
@@ -1393,13 +1614,32 @@ span.file-size {
             document.querySelector('#process-step-form-container .card-title').textContent = 'Edit Step';
         }
 
+        function editStepException(stepId, name, description) {
+            // Show the form container
+            document.getElementById('process-step-exception-container').classList.remove('col-md-12');
+            document.getElementById('process-step-exception-container').classList.add('col-md-6');
+            document.getElementById('process-step-exception-form-container').style.display = 'block';
+
+            // Update form action and method
+            const form = document.querySelector('#process-step-exception-form');
+            form.setAttribute('data-mode', 'edit');
+            form.setAttribute('data-step-exception-id', stepId);
+
+            // Populate form fields
+            form.querySelector('input[name="name"]').value = name;
+            form.querySelector('textarea[name="description"]').value = description;
+
+            // Update form title
+            document.querySelector('#process-step-exception-form-container .card-title').textContent = 'Edit Step Exception';
+        }
+
         function editTask(taskId) {
             // Adjust the layout to show the form
             document.getElementById('process-task-container').classList.remove('col-md-12');
             document.getElementById('process-task-container').classList.add('col-md-6');
             document.getElementById('process-task-form-container').style.display = 'block';
             document.getElementById("task-info-container").style.display = "none";
-
+            resetState('task');
             // Load task actions first
             fetch("{{ route('rpa.action.api') }}")
                 .then(response => response.json())
@@ -1426,7 +1666,7 @@ span.file-size {
                     form.setAttribute('data-task-id', taskId); // Store the task ID
                     form.setAttribute('data-mode', 'edit'); // Set mode to 'edit'
                     data = firstdata[0]; // Assuming one task is returned
-
+                    
                     // Populate form fields
                     form.querySelector('input[name="task_name"]').value = data.task_name;
                     form.querySelector('select[name="task_action"]').value = data.task_action; // Set the selected action
@@ -1469,7 +1709,7 @@ span.file-size {
             document.getElementById('task-exception-form-container').style.display = 'block';
             document.getElementById("exception-info-container").style.display = "none";
             // document.getElementById("task-info-container").style.display = "none";
-
+            resetState('exception');
             // Load task actions first
             fetch("{{ route('rpa.action.api') }}")
                 .then(response => response.json())
@@ -1531,43 +1771,87 @@ span.file-size {
                 .catch(error => console.error('Error fetching task actions or details:', error));
         }
 
+        function sortTable(){
+            // Get the table and tbody elements
+            const table = document.getElementById("process-task-table");
+            const tbody = document.getElementById("process-task-table-body");
+
+            // Convert the rows to an array for sorting
+            const rows = Array.from(tbody.getElementsByTagName("tr"));
+
+            // Sort the rows based on the "Order" column (index 2)
+            rows.sort((a, b) => {
+                const orderA = parseInt(a.getElementsByTagName("td")[2].textContent, 10);
+                const orderB = parseInt(b.getElementsByTagName("td")[2].textContent, 10);
+                return orderA - orderB;
+            });
+
+            // Remove all rows from the tbody
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+
+            // Append the sorted rows back to the tbody
+            rows.forEach(row => tbody.appendChild(row));
+        }
+        
+
         // file upload script------------------------
         // no react or anything
-        let state = {};
+        // Separate states for each form
+        let state = {
+            exception: { filesArr: [] }, // State for the exception form
+            task: { filesArr: [] }       // State for the task form
+        };
 
-        // state management
-        function updateState(newState) {
-            state = { ...state, ...newState };
+        // State management
+        function updateState(formKey, newState) {
+            state[formKey] = { ...state[formKey], ...newState };
             console.log(state);
         }
 
-        // event handlers
-        $("#upload").change(function(e) {
+        // Reset function
+        function resetState(formKey) {
+            updateState(formKey, { filesArr: [] }); // Reset the filesArr to an empty array
+            renderFileList(formKey); // Update the UI to reflect the empty state
+        }
+
+        // Event handlers
+        $("#uploadException").change(function(e) {
+            resetState('exception'); // Reset state for the exception form
             const files = Array.from(this.files);
-            updateState({ filesArr: files });
-            renderFileList();
+            updateState('exception', { filesArr: files });
+            renderFileList('exception');
+        });
+
+        $("#uploadTask").change(function(e) {
+            resetState('task'); // Reset state for the task form
+            const files = Array.from(this.files);
+            updateState('task', { filesArr: files });
+            renderFileList('task');
         });
 
         $(".files").on("click", "li > i", function(e) {
-            let key = $(this)
-                .parent()
-                .attr("key");
-            let curArr = state.filesArr;
+            let key = $(this).parent().attr("key");
+            let formKey = $(this).closest('.form-group').find('input[type="file"]').attr('id').replace('upload', '').toLowerCase();
+            let curArr = state[formKey].filesArr;
             curArr.splice(key, 1);
-            updateState({ filesArr: curArr });
-            renderFileList();
+            updateState(formKey, { filesArr: curArr });
+            renderFileList(formKey);
         });
 
         $("form").on("submit", function(e) {
             e.preventDefault();
             console.log(state);
-            renderFileList();
+            // Render file lists for both forms on submit (optional)
+            renderFileList('exception');
+            renderFileList('task');
         });
 
-        // render functions
-        function renderFileList() {
-            const fileList = document.getElementById('file-list'); // Target specific list
-            let fileMap = state.filesArr.map((file, index) => {
+        // Render function
+        function renderFileList(formKey) {
+            const fileList = document.getElementById(`file-list-${formKey}`); // Target specific list
+            let fileMap = state[formKey].filesArr.map((file, index) => {
                 let suffix = "bytes";
                 let size = file.size;
                 if (size >= 1024 && size < 1024000) {

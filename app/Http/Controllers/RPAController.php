@@ -10,9 +10,11 @@ use App\Models\ProcessException;
 use App\Models\FileImg;
 use App\Models\Job_template;
 use App\Models\RPA_action;
+use App\Models\step_exception;
 use App\Models\Job;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -179,10 +181,9 @@ class RPAController extends Controller
             $request->merge([
                 'confidence' => (int) $request->input('confidence'),
                 'order' => (int) $request->input('order'),
-                'is_loop' => $request->input('is_loop') === null ? 0 : 1,
-                'is_stop_task' => $request->input('is_stop_task') === null ? 0 : 1,
-                'description' => $request->input('description') === null ? '': '',
-                'value' => $request->input('value') === null ? '': '',
+                'description' => $request->input('description') ?? '',
+                'value' => (string) ($request->input('value') ?? ''),
+                'step_id' => (int) $request->input('step_id'),
             ]);
 
 
@@ -204,51 +205,67 @@ class RPAController extends Controller
 
             $processTask = ProcessTask::create($validated);
             
-            if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
-                $file1 = $request->file('file1');
-                $file2 = $request->file('file2');
-                $file3 = $request->file('file3');
+            // if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
+            //     $file1 = $request->file('file1');
+            //     $file2 = $request->file('file2');
+            //     $file3 = $request->file('file3');
 
-                // Store file1
-                if ($file1) {
-                    $fileName = $file1->getClientOriginalName();
-                    $file1Path = $file1->store('uploads', 'public');
+            //     // Store file1
+            //     if ($file1) {
+            //         $fileName = $file1->getClientOriginalName();
+            //         $file1Path = $file1->store('uploads', 'public');
 
-                    $fileImg1 = new FileImg();
-                    $fileImg1->filename = $fileName;
-                    $fileImg1->file_path = $file1Path;
-                    $fileImg1->file_index = 1;
-                    $fileImg1->original_name = $fileName;
-                    $fileImg1->process_task_id = $processTask->id;
-                    $fileImg1->save();
-                }
+            //         $fileImg1 = new FileImg();
+            //         $fileImg1->filename = $fileName;
+            //         $fileImg1->file_path = $file1Path;
+            //         $fileImg1->file_index = 1;
+            //         $fileImg1->original_name = $fileName;
+            //         $fileImg1->process_task_id = $processTask->id;
+            //         $fileImg1->save();
+            //     }
 
-                // Store file2
-                if ($file2) {
-                    $fileName = $file2->getClientOriginalName();
-                    $file2Path = $file2->store('uploads', 'public');
+            //     // Store file2
+            //     if ($file2) {
+            //         $fileName = $file2->getClientOriginalName();
+            //         $file2Path = $file2->store('uploads', 'public');
         
-                    $fileImg2 = new FileImg();
-                    $fileImg2->filename = $fileName;
-                    $fileImg2->file_path = $file2Path;
-                    $fileImg2->file_index = 2;
-                    $fileImg2->original_name = $fileName;
-                    $fileImg2->process_task_id = $processTask->id;
-                    $fileImg2->save();
-                }
+            //         $fileImg2 = new FileImg();
+            //         $fileImg2->filename = $fileName;
+            //         $fileImg2->file_path = $file2Path;
+            //         $fileImg2->file_index = 2;
+            //         $fileImg2->original_name = $fileName;
+            //         $fileImg2->process_task_id = $processTask->id;
+            //         $fileImg2->save();
+            //     }
 
-                // Store file3
-                if ($file3) {
-                    $fileName = $file3->getClientOriginalName();
-                    $file3Path = $file3->store('uploads', 'public');
+            //     // Store file3
+            //     if ($file3) {
+            //         $fileName = $file3->getClientOriginalName();
+            //         $file3Path = $file3->store('uploads', 'public');
         
-                    $fileImg3 = new FileImg();
-                    $fileImg3->filename = $fileName;
-                    $fileImg3->file_path = $file3Path;
-                    $fileImg3->file_index = 3;
-                    $fileImg3->original_name = $fileName;
-                    $fileImg3->process_task_id = $processTask->id;
-                    $fileImg3->save();
+            //         $fileImg3 = new FileImg();
+            //         $fileImg3->filename = $fileName;
+            //         $fileImg3->file_path = $file3Path;
+            //         $fileImg3->file_index = 3;
+            //         $fileImg3->original_name = $fileName;
+            //         $fileImg3->process_task_id = $processTask->id;
+            //         $fileImg3->save();
+            //     }
+
+            // }
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $index => $file) {
+                    $fileName = $file->getClientOriginalName();
+                    $filePath = $file->store('uploads', 'public');
+    
+                    FileImg::create([
+                        'filename' => $fileName,
+                        'file_path' => $filePath,
+                        'file_index' => $index + 1,
+                        'original_name' => $fileName,
+                        'process_task_id' => $processTask->id,
+                    ]);
                 }
             }
             return response()->json($processTask);
@@ -293,55 +310,21 @@ class RPAController extends Controller
             $task->value = $validated['value'];
             $task->task_action = $validated['task_action'];
             $task->save();
+
             
-            //delete old image files
-            FileImg::where('process_task_id', $task->id)->delete();
-
-            if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
-                $file1 = $request->file('file1');
-                $file2 = $request->file('file2');
-                $file3 = $request->file('file3');
-
-                // Store file1
-                if ($file1) {
-                    $fileName = $file1->getClientOriginalName();
-                    $file1Path = $file1->store('uploads', 'public');
-
-                    $fileImg1 = new FileImg();
-                    $fileImg1->filename = $fileName;
-                    $fileImg1->file_path = $file1Path;
-                    $fileImg1->file_index = 1;
-                    $fileImg1->original_name = $fileName;
-                    $fileImg1->process_task_id = $task->id;
-                    $fileImg1->save();
-                }
-
-                // Store file2
-                if ($file2) {
-                    $fileName = $file2->getClientOriginalName();
-                    $file2Path = $file2->store('uploads', 'public');
-        
-                    $fileImg2 = new FileImg();
-                    $fileImg2->filename = $fileName;
-                    $fileImg2->file_path = $file2Path;
-                    $fileImg2->file_index = 2;
-                    $fileImg2->original_name = $fileName;
-                    $fileImg2->process_task_id = $task->id;
-                    $fileImg2->save();
-                }
-
-                // Store file3
-                if ($file3) {
-                    $fileName = $file3->getClientOriginalName();
-                    $file3Path = $file3->store('uploads', 'public');
-        
-                    $fileImg3 = new FileImg();
-                    $fileImg3->filename = $fileName;
-                    $fileImg3->file_path = $file3Path;
-                    $fileImg3->file_index = 3;
-                    $fileImg3->original_name = $fileName;
-                    $fileImg3->process_task_id = $task->id;
-                    $fileImg3->save();
+            if ($request->hasFile('files')) {
+                FileImg::where('process_task_id', $task->id)->delete();
+                foreach ($request->file('files') as $index => $file) {
+                    $fileName = $file->getClientOriginalName();
+                    $filePath = $file->store('uploads', 'public');
+    
+                    FileImg::create([
+                        'filename' => $fileName,
+                        'file_path' => $filePath,
+                        'file_index' => $index + 1,
+                        'original_name' => $fileName,
+                        'process_task_id' => $task->id,
+                    ]);
                 }
             }
             return response()->json($task);
@@ -359,6 +342,81 @@ class RPAController extends Controller
             'success' => true,
             'message' => 'Task deleted successfully',
         ]);
+    }
+
+    public function process_step_exception_index(Request $request){
+        $stepId = $request->query('step_id');
+
+        // Validate processId if necessary
+        if (!$stepId) {
+            return response()->json(['error' => 'Step ID is required'], 400);
+        }
+
+        $processSteps = step_exception::where('step_id', $stepId)
+                                ->where('delete_by', '=', 1)
+                                ->get();
+
+        return response()->json($processSteps);
+    }
+
+    public function process_step_exception_store(Request $request){
+
+        try {
+            $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'step_id' => 'required|integer',
+            'description' => 'string|max:255',
+            ]);
+            
+            $validated['create_by'] = Auth::id();
+        } catch (ValidationException $e) {
+            return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $e->errors()
+            ], 422);
+        }
+        
+        $processStep = step_exception::create($validated);
+
+        return response()->json($processStep);
+    }
+
+    public function process_step_exception_update($id, Request $request){
+        $step = step_exception::find($id);
+
+        if ($request->isMethod('PUT')) {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'string|max:255',
+            ]);
+
+            $step->name = $validated['name'];
+            $step->description = $validated['description'];
+            $step->save();
+
+            return response()->json($step);
+        }
+
+        return response()->json($step);
+    }
+
+    public function process_step_exception_destroy($id){
+        $step = step_exception::find($id);
+
+        $step->delete_by = Auth::id();
+        $step->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Step deleted successfully',
+        ]);
+    }
+
+    public function getStepException($id){
+
+        $step = step_exception::where('delete_by', '=', 1) -> where('id', '=', $id) -> get();
+
+        return response()->json($step);
     }
 
     public function process_exception_index(Request $request){
@@ -415,54 +473,6 @@ class RPAController extends Controller
             $validated['create_by'] = Auth::id();
 
             $processException = ProcessException::create($validated);
-            
-            // if ($request->hasFile('file1') || $request->hasFile('file2') || $request->hasFile('file3')) {
-            //     $file1 = $request->file('file1');
-            //     $file2 = $request->file('file2');
-            //     $file3 = $request->file('file3');
-
-            //     // Store file1
-            //     if ($file1) {
-            //         $fileName = $file1->getClientOriginalName();
-            //         $file1Path = $file1->store('uploads', 'public');
-
-            //         $fileImg1 = new FileImg();
-            //         $fileImg1->filename = $fileName;
-            //         $fileImg1->file_path = $file1Path;
-            //         $fileImg1->file_index = 1;
-            //         $fileImg1->original_name = $fileName;
-            //         $fileImg1->process_task_id = $processException->id;
-            //         $fileImg1->save();
-            //     }
-
-            //     // Store file2
-            //     if ($file2) {
-            //         $fileName = $file2->getClientOriginalName();
-            //         $file2Path = $file2->store('uploads', 'public');
-        
-            //         $fileImg2 = new FileImg();
-            //         $fileImg2->filename = $fileName;
-            //         $fileImg2->file_path = $file2Path;
-            //         $fileImg2->file_index = 2;
-            //         $fileImg2->original_name = $fileName;
-            //         $fileImg2->process_task_id = $processException->id;
-            //         $fileImg2->save();
-            //     }
-
-            //     // Store file3
-            //     if ($file3) {
-            //         $fileName = $file3->getClientOriginalName();
-            //         $file3Path = $file3->store('uploads', 'public');
-        
-            //         $fileImg3 = new FileImg();
-            //         $fileImg3->filename = $fileName;
-            //         $fileImg3->file_path = $file3Path;
-            //         $fileImg3->file_index = 3;
-            //         $fileImg3->original_name = $fileName;
-            //         $fileImg3->process_task_id = $processException->id;
-            //         $fileImg3->save();
-            //     }
-            // }
 
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $index => $file) {
@@ -523,10 +533,12 @@ class RPAController extends Controller
             $task->task_action = $validated['task_action'];
             $task->save();
             
-            //delete old image files
-            FileImg::where('process_exception_id', $task->id)->delete();
+            
 
             if ($request->hasFile('files')) {
+                //delete old image files
+                FileImg::where('process_exception_id', $task->id)->delete();
+
                 foreach ($request->file('files') as $index => $file) {
                     $fileName = $file->getClientOriginalName();
                     $filePath = $file->store('uploads', 'public');
@@ -655,13 +667,14 @@ class RPAController extends Controller
         
         foreach ($processSteps as $step) {
             $tasks = $step->tasks; 
-        
+            $tasks = $step->tasks()->orderBy('order', 'asc')->get(); 
             $stepDetails[] = [
                 'step_id' => $step->id,
                 'step_name' => $step->Step_name,
                 'task_ids' => $tasks->pluck('id')->toArray(),
             ];
-        
+            //sort tasks by order
+            $tasks = $tasks->sortBy('order');
             foreach ($tasks as $task) {
                 $taskDetails[] = [
                     'task_id' => $task->id,

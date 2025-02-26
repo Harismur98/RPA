@@ -45,7 +45,7 @@ class ProcessException extends Model
 
     public function img()
     {
-        return $this->hasMany(Fileimg::class, 'process_task_id', 'id');
+        return $this->hasMany(Fileimg::class, 'process_exception_id', 'id');
     }
 
     public function scopeNotDeleted($query)

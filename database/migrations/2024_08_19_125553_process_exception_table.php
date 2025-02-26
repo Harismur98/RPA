@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('is_stop_task');
             $table->string('value');
             $table->unsignedBigInteger('step_id');
-            $table->foreign('step_id')->references('id')->on('processSteps');
+            $table->foreign('step_id')->references('id')->on('process_step_exceptions');
             $table->timestamps();
         });
     }

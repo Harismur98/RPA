@@ -12,22 +12,63 @@
     <!-- Custom CSS -->
     <style>
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9d5ff 100%);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
         .login-container {
             max-width: 400px;
-            width: 100%;
-            padding: 30px;
+            width: 90%;
+            padding: 40px;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
         }
-        .login-container .btn-primary {
-            width: 100%;
+        .login-container:hover {
+            transform: translateY(-5px);
+        }
+        .login-container h3 {
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #9333ea;
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.25);
+        }
+        .form-check-input:checked {
+            background-color: #9333ea;
+            border-color: #9333ea;
+        }
+        a {
+            color: #9333ea;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover {
+            color: #7e22ce;
         }
     </style>
 </head>

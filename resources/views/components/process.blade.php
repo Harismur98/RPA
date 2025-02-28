@@ -1840,7 +1840,9 @@
             renderFileList(formKey);
         });
 
-        $("form").on("submit", function(e) {
+        // Change this generic form handler
+        // $("form").on("submit", function(e) {
+        $("#task-exception-form, #process-task-form").on("submit", function(e) {
             e.preventDefault();
             console.log(state);
             // Render file lists for both forms on submit (optional)
@@ -1874,3 +1876,8 @@
     </script>
 </div>
 @endsection
+
+{{-- @section('scripts')
+<script type="module" src="{{ asset('js/process.manager.js') }}"></script>
+<script type="module" src="{{ asset('js/main.js') }}"></script> --}}
+{{-- @endsection --}}

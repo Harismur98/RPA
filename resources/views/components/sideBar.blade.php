@@ -40,15 +40,6 @@
                   <p>Dashboard</p>
                   <span class="caret"></span>
                 </a>
-                <div class="collapse" id="dashboard">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="../demo1/index.html">
-                        <span class="sub-item">Dashboard 1</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
               </li>
               <li class="nav-section">
                 <span class="sidebar-mini-icon">
@@ -141,7 +132,22 @@
                   </ul>
                 </div>
               </li>
-
+              <li class="nav-item">
+                <a data-toggle="collapse" href="#base">
+                    <i class="fas fa-layer-group"></i>
+                    <p>Base</p>
+                    <span class="caret"></span>
+                </a>
+                <div class="collapse" id="base">
+                    <ul class="nav nav-collapse">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="sub-item">Some Item</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+              </li>
             </ul>
           </div>
         </div>

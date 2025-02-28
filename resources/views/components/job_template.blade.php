@@ -1,6 +1,43 @@
 @extends('layout.app')
 
 @section('content')
+<style>
+    .btn-icon {
+        padding: 0.5rem;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .btn-icon i {
+        font-size: 14px;
+    }
+
+    .btn-round {
+        border-radius: 50%;
+    }
+
+    .gap-2 {
+        gap: 0.5rem;
+    }
+
+    /* Hover effects */
+    .btn-icon:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Active state */
+    .btn-icon:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+</style>
+
 <div class="main-panel">
     @include('components.navbarHeader')
     @if (session('success'))
@@ -82,22 +119,31 @@
                                         <td>{{ $jobTemplate->process ? $jobTemplate->process->process_name : 'No process' }}</td>
                                         <td>{{ $jobTemplate->vm ? $jobTemplate->vm->name : 'No VM' }}</td>
                                         <td>
-                                            <div class="form-button-action">
+                                            <div class="d-flex gap-2">
                                                 <button 
-                                                    class="btn btn-link btn-primary btn-lg edit-template-button" 
+                                                    class="btn btn-icon btn-primary btn-round btn-sm edit-template-button" 
                                                     data-id="{{ $jobTemplate->id }}" 
                                                     data-name="{{ $jobTemplate->name }}" 
                                                     data-description="{{ $jobTemplate->description }}" 
                                                     data-vm-name="{{ $jobTemplate->vm ? $jobTemplate->vm->name : '' }}" 
                                                     data-process-id="{{ $jobTemplate->process_id }}"
-                                                    title="Edit"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Edit Template"
                                                 >
                                                     <i class="fa fa-edit"></i>
                                                 </button>
 
-                                                    <button type="submit" class="btn btn-link btn-danger" onclick="deleteItem({{ $jobTemplate->id }},'template')" data-bs-toggle="tooltip" title="Remove">
-                                                        <i class="fa fa-times"></i>
-                                                    </button>
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-icon btn-danger btn-round btn-sm" 
+                                                    onclick="deleteItem({{ $jobTemplate->id }},'template')" 
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    title="Delete Template"
+                                                >
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -111,8 +157,11 @@
 
                     <div class="col-md-6" id="add-template-form-container" style="display: none;">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4 class="card-title">Add New Template</h4>
+                                <button type="button" class="close" onclick="closeForm('add')" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
                             <div class="card-body">
                                 <form action="{{ route('rpa.template.store') }}" method="POST">
@@ -137,8 +186,9 @@
                                             <option value="" disabled selected>Loading vm...</option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group d-flex justify-content-between">
                                         <button type="submit" class="btn btn-primary">Save Process</button>
+                                        <button type="button" class="btn btn-secondary" onclick="closeForm('add')">Cancel</button>
                                     </div>
                                 </form>
                             </div>
@@ -147,8 +197,11 @@
 
                     <div class="col-md-6" id="edit-template-form-container" style="display: none;">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4 class="card-title">Edit Template</h4>
+                                <button type="button" class="close" onclick="closeForm('edit')" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
                             <div class="card-body">
                                 <form id="editTemplateForm" action="{{ route('rpa.template.update') }}" method="POST">
@@ -174,7 +227,10 @@
                                             <option value="" disabled selected>Loading vm...</option>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+                                    <div class="form-group d-flex justify-content-between mt-3">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        <button type="button" class="btn btn-secondary" onclick="closeForm('edit')">Cancel</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -190,7 +246,12 @@
     <script>
         const table = new DataTable('#vm-table');
         let selectedJobId = null;
-        $('#vm-table tbody').on('click', 'tr', function() {
+        $('#vm-table tbody').on('click', 'tr', function(e) {
+            // Don't trigger row selection if clicking on action buttons
+            if (e.target.closest('.btn-icon')) {
+                return;
+            }
+            
             // Toggle selected class
             $(this).toggleClass('selected');
             
@@ -232,11 +293,27 @@
             loadDropdowns();
         });
 
+        function closeForm(type) {
+            // Reset the table container back to full width
+            document.getElementById('template-table-container').classList.remove('col-md-6');
+            document.getElementById('template-table-container').classList.add('col-md-12');
+
+            // Hide the form container
+            if (type === 'add') {
+                document.getElementById('add-template-form-container').style.display = 'none';
+                // Reset the add form
+                document.querySelector('#add-template-form-container form').reset();
+            } else if (type === 'edit') {
+                document.getElementById('edit-template-form-container').style.display = 'none';
+                // Reset the edit form
+                document.querySelector('#editTemplateForm').reset();
+            }
+        }
+
         function deleteItem(itemId, type) {
             const confirmMessage = `Are you sure you want to delete this ${type}?`;
             const routeUrl = {
                 template: "{{ route('rpa.template.destroy', '') }}/",
-
             };
 
             if (confirm(confirmMessage)) {
@@ -251,11 +328,10 @@
                     if (data.success) {
                         // Remove the deleted item row from the table
                         document.getElementById(`${type}-row-${itemId}`).remove();
-
-
-                        //kena remove table yg terbukak
-
-
+                        
+                        // Close any open forms
+                        closeForm('add');
+                        closeForm('edit');
                         
                         console.log(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`);
                     } else {
@@ -267,10 +343,22 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tooltips using Bootstrap 5
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
             const editButtons = document.querySelectorAll('.edit-template-button');
             loadDropdowns('edit');
             editButtons.forEach(button => {
-                button.addEventListener('click', function () {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation(); // Prevent row click event
+                    
+                    // Close any open forms first
+                    closeForm('add');
+                    closeForm('edit');
+
                     // Extract data from the clicked row
                     const id = this.getAttribute('data-id');
                     const name = this.getAttribute('data-name');
@@ -282,17 +370,26 @@
                     document.getElementById('templateId').value = id;
                     document.getElementById('templateName').value = name;
                     document.getElementById('templateDescription').value = description;
-                    document.getElementById('vmSelectEdit').value = vm_name;
-
-                    const processSelect = document.getElementById('processSelectEdit');
-                    [...processSelect.options].forEach(option => {
-                        option.selected = option.value == processId;
-                    });
 
                     // Adjust layout
                     document.getElementById('template-table-container').classList.remove('col-md-12');
                     document.getElementById('template-table-container').classList.add('col-md-6');
                     document.getElementById('edit-template-form-container').style.display = 'block';
+
+                    // Set the process and VM select values after the dropdowns are loaded
+                    setTimeout(() => {
+                        if (processId) {
+                            document.getElementById('processSelectEdit').value = processId;
+                        }
+                        if (vm_name) {
+                            const vmSelect = document.getElementById('vmSelectEdit');
+                            Array.from(vmSelect.options).forEach(option => {
+                                if (option.text === vm_name) {
+                                    vmSelect.value = option.value;
+                                }
+                            });
+                        }
+                    }, 500); // Give time for dropdowns to load
                 });
             });
         });

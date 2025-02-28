@@ -87,6 +87,11 @@
                       </a>
                     </li>
                     <li>
+                      <a href="{{ route('jobs.index') }}">
+                        <span class="sub-item">Job Status</span>
+                      </a>
+                    </li>
+                    <li>
                       <a href="forms/forms.html">
                         <span class="sub-item">Schedule</span>
                       </a>

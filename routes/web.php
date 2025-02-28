@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RPAController;
 use App\Http\Controllers\RPAController_test;
+use App\Http\Controllers\JobController;
 
 
 
@@ -76,7 +77,11 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
 
         Route::prefix('job')->group(function () {
             Route::post('/add-job/{id}', [RPAController::class, 'addJob'])->name('rpa.template.addJob');
-            
+            Route::get('/', [JobController::class, 'index'])->name('jobs.index');
+            Route::get('/{id}', [JobController::class, 'show'])->name('jobs.show');
+            Route::get('/{id}/status', [JobController::class, 'getJobStatus'])->name('jobs.status');
+            Route::post('/{id}/stop', [JobController::class, 'stop'])->name('jobs.stop');
+            Route::delete('/{id}', [JobController::class, 'destroy'])->name('jobs.destroy');
         });
 
         Route::prefix('rpa-action')->group(function (){

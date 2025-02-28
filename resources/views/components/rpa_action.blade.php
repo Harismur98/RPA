@@ -7,10 +7,10 @@
     <div class="container">
         <div class="page-inner">
             <div class="page-header">
-                <h3 class="fw-bold mb-3">Panels</h3>
+                <h3 class="fw-bold mb-3">RPA Actions</h3>
                 <ul class="breadcrumbs mb-3">
                     <li class="nav-home">
-                        <a href="#">
+                        <a href="{{ route('') }}">
                             <i class="icon-home"></i>
                         </a>
                     </li>
@@ -18,13 +18,13 @@
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Base</a>
+                        <a href="#">RPA</a>
                     </li>
                     <li class="separator">
                         <i class="icon-arrow-right"></i>
                     </li>
                     <li class="nav-item">
-                        <a href="#">Panels</a>
+                        <a href="{{ route('rpa.action.index') }}">Actions</a>
                     </li>
                 </ul>
             </div>
@@ -34,12 +34,12 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex align-items-center">
-                                <h4 class="card-title">Action</h4>
+                                <h4 class="card-title">RPA Actions List</h4>
                                 <button
                                     class="btn btn-primary btn-round ms-auto"
                                     id="addactionButton"
                                 >
-                                    <i class="fa fa-plus"></i>
+                                    <i class="fa fa-plus me-2"></i>
                                     Add Action
                                 </button>
                             </div>
@@ -49,7 +49,7 @@
                                 <table id="action-table" class="display table table-striped table-hover">
                             <thead>
                               <tr>
-                                <th>Fanction Name</th>
+                                <th>Function Name</th>
                                 <th style="width: 10%">Action</th>
                               </tr>
                             </thead>
@@ -88,11 +88,13 @@
                   <!-- The form column, hidden initially -->
                     <div class="col-md-6" id="action-form-container" style="display: none;">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4 class="card-title">Add New Action</h4>
+                                <button type="button" class="close" onclick="closeActionForm()" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                             </div>
                             <div class="card-body">
-                                
                                 <form action="{{ route('rpa.action.store') }}" method="POST">
                                     @csrf
                                     <div class="form-group">
@@ -100,8 +102,9 @@
                                         <input type="text" class="form-control" name="function_name" required>
                                     </div>
                                     
-                                    <div class="form-group">
+                                    <div class="form-group d-flex justify-content-between mt-3">
                                         <button type="submit" class="btn btn-primary">Save action</button>
+                                        <button type="button" class="btn btn-secondary" onclick="closeActionForm()">Cancel</button>
                                     </div>
                                 </form>
                             </div>
@@ -114,6 +117,19 @@
     @include('components.footer')
 
     <script>
+        const table = new DataTable('#action-table');
+        
+        function closeActionForm() {
+            // Reset the table container back to full width
+            document.getElementById('action-table-container').classList.remove('col-md-6');
+            document.getElementById('action-table-container').classList.add('col-md-12');
+
+            // Hide the form container
+            document.getElementById('action-form-container').style.display = 'none';
+            // Reset the form
+            document.querySelector('#action-form-container form').reset();
+        }
+
         document.getElementById('addactionButton').addEventListener('click', function() {
             // Change the table's grid from col-md-12 to col-md-6
             document.getElementById('action-table-container').classList.remove('col-md-12');

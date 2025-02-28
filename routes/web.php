@@ -19,7 +19,7 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
 
     Route::get('/dashboard', function () {
         return view('index');
-    });
+    }) -> name('dashboard');
     Route::resource('/users', UserController::class);
     Route::resource('vms', VMController::class);
     Route::get('/get-vm', [VMController::class, 'getVM'])->name('get.vm');

@@ -12,7 +12,7 @@ use App\Http\Controllers\JobController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 Route::group(['middleware' => ['auth:sanctum']], function (){
@@ -95,3 +95,9 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
     });
 
 });
+
+// Add these routes for user management
+Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+Route::post('/users', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
+Route::put('/users/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{id}', [App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');

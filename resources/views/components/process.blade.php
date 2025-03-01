@@ -218,8 +218,11 @@
                                     <!-- The form column, hidden initially -->
                                     <div class="col-md-6" id="process-form-container" style="display: none;">
                                         <div class="card">
-                                            <div class="card-header">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
                                                 <h4 class="card-title">Add New Process</h4>
+                                                <button type="button" class="close" onclick="closeProcessForm('process')" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
                                             </div>
                                             <div class="card-body">
                                                 <form action="{{ route('rpa.process.store') }}" method="POST">
@@ -232,8 +235,9 @@
                                                         <label for="description">Description</label>
                                                         <textarea class="form-control" name="description" required></textarea>
                                                     </div>
-                                                    <div class="form-group">
+                                                    <div class="form-group d-flex justify-content-between mt-3">
                                                         <button type="submit" class="btn btn-primary">Save Process</button>
+                                                        <button type="button" class="btn btn-secondary" onclick="closeProcessForm('process')">Cancel</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -298,8 +302,11 @@
                                 <!-- The form column, hidden initially -->
                                 <div class="col-md-6" id="process-step-form-container" style="display: none;">
                                     <div class="card">
-                                        <div class="card-header">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
                                             <h4 class="card-title">Add Step</h4>
+                                            <button type="button" class="close" onclick="closeProcessForm('step')" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
                                         </div>
                                         <div class="card-body">
                                             <form id="process-step-form" method="POST">
@@ -313,8 +320,9 @@
                                                     <label for="description">Description</label>
                                                     <textarea class="form-control" name="description" required></textarea>
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group d-flex justify-content-between mt-3">
                                                     <button type="submit" class="btn btn-primary">Save Step</button>
+                                                    <button type="button" class="btn btn-secondary" onclick="closeProcessForm('step')">Cancel</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -390,8 +398,11 @@
                             <!-- The form column, hidden initially -->
                             <div class="col-md-6" id="process-task-form-container" style="display: none;">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
                                         <h4 class="card-title">Add New Process Task</h4>
+                                        <button type="button" class="close" onclick="closeProcessForm('task')" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         <form id="process-task-form" method="POST" enctype="multipart/form-data">
@@ -557,11 +568,14 @@
                                 </div>
                             </div>
 
-                            <!-- The form column, hidden initially -->
+                            <!-- Step Exception Form -->
                             <div class="col-md-6" id="process-step-exception-form-container" style="display: none;">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
                                         <h4 class="card-title">Add Step Exception</h4>
+                                        <button type="button" class="close" onclick="closeProcessForm('step-exception')" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         <form id="process-step-exception-form" method="POST">
@@ -575,8 +589,9 @@
                                                 <label for="description">Description</label>
                                                 <textarea class="form-control" name="description" ></textarea>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group d-flex justify-content-between mt-3">
                                                 <button type="submit" class="btn btn-primary">Save</button>
+                                                <button type="button" class="btn btn-secondary" onclick="closeProcessForm('step-exception')">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -648,10 +663,14 @@
                                 </div>
                             </div>     
                             
+                            <!-- Task Exception Form -->
                             <div class="col-md-6" id="task-exception-form-container" style="display: none;">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
                                         <h4 class="card-title">Add Task Exception</h4>
+                                        <button type="button" class="close" onclick="closeProcessForm('task-exception')" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
                                     </div>
                                     <div class="card-body">
                                         <form id="task-exception-form" method="POST" enctype="multipart/form-data">
@@ -740,7 +759,6 @@
                                                         <input type="file" class="form-control" name="file3" accept="image/*">
                                                     </div>
                                                 </div> --}}
-
                                                 <div class="col-md-4">
                                                     <div class="form-group">
                                                         <label for="uploadException">
@@ -755,8 +773,9 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group d-flex justify-content-between mt-3">
                                                 <button type="submit" class="btn btn-primary">Save Exception</button>
+                                                <button type="button" class="btn btn-secondary" onclick="closeProcessForm('task-exception')">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -988,10 +1007,6 @@
         function showAddStepForm() {
             document.getElementById('process-step-container').classList.remove('col-md-12');
             document.getElementById('process-step-container').classList.add('col-md-6');
-            const form = document.querySelector('#process-step-form-container form');
-            form.reset();
-            document.querySelector('#process-step-form-container .card-title').textContent = 'Add Step';
-            document.getElementById("step-info-container").style.display = "none";
             document.getElementById('process-step-form-container').style.display = 'block';
         }
 
@@ -1414,11 +1429,9 @@
         }
 
         document.getElementById('remove_process_details').addEventListener('click', function(event){
+            document.getElementById('process-info-container').style.display = 'none';
             document.getElementById('process-table-container').classList.remove('col-md-6');
             document.getElementById('process-table-container').classList.add('col-md-12');
-
-            // Show the form container
-            document.getElementById("process-info-container").style.display = "none";
         });
 
         function showStepDetails(row){
@@ -1443,11 +1456,9 @@
         }
 
         document.getElementById('remove_step_details').addEventListener('click', function(event){
+            document.getElementById('step-info-container').style.display = 'none';
             document.getElementById('process-step-container').classList.remove('col-md-6');
             document.getElementById('process-step-container').classList.add('col-md-12');
-
-            // Show the form container
-            document.getElementById("step-info-container").style.display = "none";
         });
 
         function showTaskDetails(row) {
@@ -1798,7 +1809,7 @@
 
         // file upload script------------------------
         // no react or anything
-        // Separate states for each form
+        // Separate states for each form 
         let state = {
             exception: { filesArr: [] }, // State for the exception form
             task: { filesArr: [] }       // State for the task form
@@ -1873,11 +1884,83 @@
             fileList.innerHTML = fileMap.join('');
         }
         // file upload script------------------------
+
+        function closeProcessForm(type) {
+            // Get the container ID based on the type
+            let containerId;
+            let tableContainerId;
+            
+            switch(type) {
+                case 'process':
+                    containerId = 'process-form-container';
+                    tableContainerId = 'process-table-container';
+                    break;
+                case 'step':
+                    containerId = 'process-step-form-container';
+                    tableContainerId = 'process-step-container';
+                    break;
+                case 'task':
+                    containerId = 'process-task-form-container';
+                    tableContainerId = 'process-task-container';
+                    break;
+                case 'step-exception':
+                    containerId = 'process-step-exception-form-container';
+                    tableContainerId = 'process-step-exception-container';
+                    break;
+                case 'task-exception':
+                    containerId = 'task-exception-form-container';
+                    tableContainerId = 'task-exception-container';
+                    break;
+            }
+
+            // Reset the table container back to full width
+            if (document.getElementById(tableContainerId)) {
+                document.getElementById(tableContainerId).classList.remove('col-md-6');
+                document.getElementById(tableContainerId).classList.add('col-md-12');
+            }
+
+            // Hide the form container
+            if (document.getElementById(containerId)) {
+                document.getElementById(containerId).style.display = 'none';
+                // Reset the form
+                const form = document.querySelector(`#${containerId} form`);
+                if (form) {
+                    form.reset();
+                }
+            }
+        }
+
+        // Update existing show form functions
+        function showAddProcessForm() {
+            document.getElementById('process-table-container').classList.remove('col-md-12');
+            document.getElementById('process-table-container').classList.add('col-md-6');
+            document.getElementById('process-form-container').style.display = 'block';
+        }
+
+        function showAddStepForm() {
+            document.getElementById('process-step-container').classList.remove('col-md-12');
+            document.getElementById('process-step-container').classList.add('col-md-6');
+            document.getElementById('process-step-form-container').style.display = 'block';
+        }
+
+        function showAddTaskForm() {
+            document.getElementById('process-task-container').classList.remove('col-md-12');
+            document.getElementById('process-task-container').classList.add('col-md-6');
+            document.getElementById('process-task-form-container').style.display = 'block';
+        }
+
+        // Add event listeners for existing close buttons
+        document.getElementById('remove_process_details')?.addEventListener('click', function() {
+            document.getElementById('process-info-container').style.display = 'none';
+            document.getElementById('process-table-container').classList.remove('col-md-6');
+            document.getElementById('process-table-container').classList.add('col-md-12');
+        });
+
+        document.getElementById('remove_step_details')?.addEventListener('click', function() {
+            document.getElementById('step-info-container').style.display = 'none';
+            document.getElementById('process-step-container').classList.remove('col-md-6');
+            document.getElementById('process-step-container').classList.add('col-md-12');
+        });
     </script>
 </div>
 @endsection
-
-{{-- @section('scripts')
-<script type="module" src="{{ asset('js/process.manager.js') }}"></script>
-<script type="module" src="{{ asset('js/main.js') }}"></script> --}}
-{{-- @endsection --}}

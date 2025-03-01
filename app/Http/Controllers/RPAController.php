@@ -23,6 +23,7 @@ class RPAController extends Controller
     public function processIndex(){
         $process = Process::where('delete_by', '=', 1) -> get();
 
+        // return view('components.process.index', compact('process')); //testing new structure
         return view('components.process', compact('process'));
     }
 

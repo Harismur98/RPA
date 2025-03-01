@@ -1,4 +1,3 @@
-
 <!-- Sidebar -->
 <div class="sidebar" data-background-color="dark">
         <div class="sidebar-logo">
@@ -47,6 +46,26 @@
                 </span>
                 <h4 class="text-section">Components</h4>
               </li>
+              
+              @if(Auth::check() && Auth::user()->role->name === 'Super Admin')
+              <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#admin">
+                  <i class="fas fa-user-shield"></i>
+                  <p>Administration</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="admin">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{{ route('users.index') }}">
+                        <span class="sub-item">User Management</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              @endif
+              
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#forms">
                   <i class="fas fa-pen-square"></i>
@@ -65,7 +84,7 @@
               </li>
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#rpa">
-                  <i class="fas fa-pen-square"></i>
+                  <i class="fas fa-robot"></i>
                   <p>RPA</p>
                   <span class="caret"></span>
                 </a>
@@ -100,8 +119,8 @@
                 </div>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#vm  ">
-                  <i class="fas fa-pen-square"></i>
+                <a data-bs-toggle="collapse" href="#vm">
+                  <i class="fas fa-server"></i>
                   <p>VM</p>
                   <span class="caret"></span>
                 </a>

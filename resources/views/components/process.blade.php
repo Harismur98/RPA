@@ -1025,17 +1025,17 @@
             document.getElementById('process-task-container').classList.add('col-md-6');
             document.getElementById('process-task-form-container').style.display = 'block';
             document.getElementById("task-info-container").style.display = "none";
-
+            console.log("test")
             const form = document.querySelector('#process-task-form-container form');
             form.setAttribute('data-mode', 'add');
             form.reset();
             document.querySelector('#process-task-form-container .card-title').textContent = 'Add Task';
-
+            
             fetch("{{ route('rpa.action.api') }}")
             .then(response => response.json())
             .then(data => {
                 let taskActionSelect = document.querySelector('#process-task-form select');
-
+                
                 // Clear existing options
                 taskActionSelect.innerHTML = '';
 
@@ -1044,6 +1044,7 @@
                     let option = document.createElement('option');
                     option.value = action.id; // Assuming `id` is the unique identifier
                     option.textContent = action.function_name; // Assuming `name` is the label for the action
+                    console.log(action.function_name)
                     taskActionSelect.appendChild(option);
                 });
             })
@@ -1931,23 +1932,23 @@
         }
 
         // Update existing show form functions
-        function showAddProcessForm() {
-            document.getElementById('process-table-container').classList.remove('col-md-12');
-            document.getElementById('process-table-container').classList.add('col-md-6');
-            document.getElementById('process-form-container').style.display = 'block';
-        }
+        // function showAddProcessForm() {
+        //     document.getElementById('process-table-container').classList.remove('col-md-12');
+        //     document.getElementById('process-table-container').classList.add('col-md-6');
+        //     document.getElementById('process-form-container').style.display = 'block';
+        // }
 
-        function showAddStepForm() {
-            document.getElementById('process-step-container').classList.remove('col-md-12');
-            document.getElementById('process-step-container').classList.add('col-md-6');
-            document.getElementById('process-step-form-container').style.display = 'block';
-        }
+        // function showAddStepForm() {
+        //     document.getElementById('process-step-container').classList.remove('col-md-12');
+        //     document.getElementById('process-step-container').classList.add('col-md-6');
+        //     document.getElementById('process-step-form-container').style.display = 'block';
+        // }
 
-        function showAddTaskForm() {
-            document.getElementById('process-task-container').classList.remove('col-md-12');
-            document.getElementById('process-task-container').classList.add('col-md-6');
-            document.getElementById('process-task-form-container').style.display = 'block';
-        }
+        // function showAddTaskForm() {
+        //     document.getElementById('process-task-container').classList.remove('col-md-12');
+        //     document.getElementById('process-task-container').classList.add('col-md-6');
+        //     document.getElementById('process-task-form-container').style.display = 'block';
+        // }
 
         // Add event listeners for existing close buttons
         document.getElementById('remove_process_details')?.addEventListener('click', function() {

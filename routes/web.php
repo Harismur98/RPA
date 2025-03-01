@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RPAController;
 use App\Http\Controllers\RPAController_test;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\ProfileController;
 
 
 
@@ -20,7 +21,12 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
     Route::get('/dashboard', function () {
         return view('index');
     }) -> name('dashboard');
-    Route::resource('/users', UserController::class);
+    
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+    // Route::resource('/users', UserController::class);
     Route::resource('vms', VMController::class);
     Route::get('/get-vm', [VMController::class, 'getVM'])->name('get.vm');
     Route::get('/generate-api-key', [VMController::class, 'generateApiKey'])->name('generate.api.key');

@@ -26,6 +26,15 @@
                     <input type="number" class="form-control" id="task_order" name="order" required min="1">
                 </div>
                 <div class="form-group">
+                    <label for="condition_type">Condition Type</label>
+                    <select class="form-control" id="condition_type" name="condition_type">
+                        <option value="">Select Condition Type</option>
+                        @foreach(\App\Enums\ConditionType::cases() as $type)
+                            <option value="{{ $type->value }}">{{ ucwords(str_replace('_', ' ', $type->value)) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Files</label>
                     <div class="upload-container">
                         <div id="drop-zone" class="dropzone">

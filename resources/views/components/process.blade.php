@@ -443,17 +443,13 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="is_loop">Is Loop?</label>
-                                                        <div class="d-flex">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="is_loop" id="is_loop_yes" value="1">
-                                                                <label class="form-check-label" for="is_loop_yes">Yes</label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="radio" name="is_loop" id="is_loop_no" value="0">
-                                                                <label class="form-check-label" for="is_loop_no">No</label>
-                                                            </div>
-                                                        </div>
+                                                        <label for="condition_type">Condition Type</label>
+                                                        <select class="form-control" id="condition_type" name="condition_type">
+                                                            <option value="">Select Condition Type</option>
+                                                            @foreach(\App\Enums\ConditionType::cases() as $type)
+                                                                <option value="{{ $type->value }}">{{ ucwords(str_replace('_', ' ', $type->value)) }}</option>
+                                                            @endforeach
+                                                        </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">

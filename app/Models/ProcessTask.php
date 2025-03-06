@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\ConditionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProcessTask extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The table associated with the model.
@@ -22,17 +24,24 @@ class ProcessTask extends Model
      * @var array
      */
     protected $fillable = [
-        'task_action',
         'task_name',
+        'step_id',
+        'description',
         'confidence',
         'order',
-        'is_loop',
         'is_stop_task',
         'value',
-        'step_id',
-        'delete_by',
+        'task_action',
+        'condition_type',
         'create_by',
-        'description',
+        'delete_by'
+    ];
+
+    protected $casts = [
+        'confidence' => 'integer',
+        'order' => 'integer',
+        'is_stop_task' => 'boolean',
+        'condition_type' => ConditionType::class
     ];
 
     /**
@@ -45,7 +54,7 @@ class ProcessTask extends Model
 
     public function img()
     {
-        return $this->hasMany(Fileimg::class);
+        return $this->hasMany(FileImg::class, 'process_task_id');
     }
 
     public function scopeNotDeleted($query)
